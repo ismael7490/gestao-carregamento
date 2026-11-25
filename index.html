@@ -653,7 +653,7 @@ function docRef(col, id) {
       refresh(col);
     },
     async acquire() { return { acquired: true }; },
-    onSnapshot(next, onErr) { return watch(col, async () => { try { next(await ref.get()); } catch (e) { onErr && onErr(e); } }); }
+    onSnapshot(next, onErr) { let last; return watch(col, async () => { try { const s = await ref.get(), k = JSON.stringify(s.exists ? s.data() : null); if (k === last) return; last = k; next(s); } catch (e) { onErr && onErr(e); } }); }
   };
   return ref;
 }
@@ -668,7 +668,7 @@ function colRef(col) {
       const docs = (data || []).map(r => snap(r.id, r.data));
       return { docs, size: docs.length, empty: !docs.length, metadata: { fromCache: false, hasPendingWrites: false }, docChanges: () => [] };
     },
-    onSnapshot(next, onErr) { return watch(col, async () => { try { next(await c.get()); } catch (e) { onErr && onErr(e); } }); }
+    onSnapshot(next, onErr) { let last; return watch(col, async () => { try { const s = await c.get(), k = JSON.stringify(s.docs.map(d => [d.id, d.data()])); if (k === last) return; last = k; next(s); } catch (e) { onErr && onErr(e); } }); }
   };
   return c;
 }
@@ -1499,7 +1499,7 @@ $("u_lista").addEventListener("click",async e=>{
     db.doc("acessos/"+myId).onSnapshot(s=>{myAce=s.exists?s.data():null;gotAce=true;evalMe()},()=>{gotAce=true;evalMe()});
   }
   const timer=setTimeout(()=>status("Ainda conectando… os dados podem estar desatualizados."),10000);
-  db.doc("config/empresa").onSnapshot(s=>{cfg={...DEF,...(s.exists?s.data():{})};renderHead();if(!editing)clearForm()},()=>{});
+  db.doc("config/empresa").onSnapshot(s=>{cfg={...DEF,...(s.exists?s.data():{})};renderHead();if(!editing)$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?"},()=>{});
   db.collection("contratos").onSnapshot(s=>{cts=s.docs.filter(d=>d.data()?.cod).map(d=>({...d.data(),_id:d.id}));renderCtSelect();if(!$("v-ct").hidden)renderCt()},()=>{});
   db.collection("veiculos").onSnapshot(s=>{veics=s.docs.filter(d=>d.data()?.placa).map(d=>({...d.data(),_id:d.id}));renderPlacas();renderCadLists();if(!$("v-cad").hidden)renderCad()},()=>{});
   db.collection("motoristas").onSnapshot(s=>{mots=s.docs.filter(d=>d.data()?.nome).map(d=>({...d.data(),_id:d.id}));renderCadLists();if(!$("v-cad").hidden)renderCad()},()=>{});

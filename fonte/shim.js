@@ -125,7 +125,7 @@ function docRef(col, id) {
       refresh(col);
     },
     async acquire() { return { acquired: true }; },
-    onSnapshot(next, onErr) { return watch(col, async () => { try { next(await ref.get()); } catch (e) { onErr && onErr(e); } }); }
+    onSnapshot(next, onErr) { let last; return watch(col, async () => { try { const s = await ref.get(), k = JSON.stringify(s.exists ? s.data() : null); if (k === last) return; last = k; next(s); } catch (e) { onErr && onErr(e); } }); }
   };
   return ref;
 }
@@ -140,7 +140,7 @@ function colRef(col) {
       const docs = (data || []).map(r => snap(r.id, r.data));
       return { docs, size: docs.length, empty: !docs.length, metadata: { fromCache: false, hasPendingWrites: false }, docChanges: () => [] };
     },
-    onSnapshot(next, onErr) { return watch(col, async () => { try { next(await c.get()); } catch (e) { onErr && onErr(e); } }); }
+    onSnapshot(next, onErr) { let last; return watch(col, async () => { try { const s = await c.get(), k = JSON.stringify(s.docs.map(d => [d.id, d.data()])); if (k === last) return; last = k; next(s); } catch (e) { onErr && onErr(e); } }); }
   };
   return c;
 }

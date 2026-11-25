@@ -144,7 +144,7 @@ body:not(.locked) .gate{display:none}
 body.ro #bar,body.ro #fc,body.ro #fct,body.ro #fv,body.ro #fm,body.ro #cf button,body.ro .btn.del,body.ro [data-a=ordem],body.ro #ct_det [data-a=edit],body.ro #ct_det [data-a=enc],body.ro #lanes .em,body.ro #lanes .mvb,body.ro #lanes [data-a=aut],body.ro #lanes .rm,body.ro #saidos [data-a=st]{display:none!important}
 .sit{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-weight:600;font-size:14px}
 select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radius:8px;border:1.5px solid var(--muted);background:var(--card);color:var(--ink)}
-.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}
 .kpi{background:var(--card);border-radius:10px;padding:12px 14px}
 .kpi b{display:block;font-size:clamp(26px,5vw,40px);line-height:1.05;font-variant-numeric:tabular-nums}
 .kpi span{font-size:13px;color:var(--muted)}
@@ -303,7 +303,7 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
 <div id="gate" class="gate"><div class="gcard"><h2>Carregando…</h2><p>Verificando seu acesso.</p></div></div>
 
 <main>
-  <p class="status" id="status">Conectando ao banco de dados…</p>
+  <p class="status" id="statusMsg">Conectando ao banco de dados…</p>
 
   <section id="v-patio" hidden>
     <div class="kpis" id="kpis"></div>
@@ -344,7 +344,7 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
 
   <section id="v-nova">
     <div class="sit"><label for="status">Situação no pátio:</label>
-      <select id="status"><option value="fila">Com ordem</option><option value="carregando">Carregando</option><option value="carregado">Carregado</option><option value="aguardlib">Esperando liberação</option><option value="liberado">Liberado</option></select>
+      <select id="status"><option value="carregando">Carregando</option><option value="carregado">Carregado</option><option value="aguardlib">Esperando liberação</option><option value="liberado">Liberado</option></select>
     </div>
     <form class="sheet" id="f" autocomplete="off">
       <div class="box head">
@@ -539,7 +539,7 @@ const fmt=(n,d=0)=>n==null||isNaN(n)?"":n.toLocaleString("pt-BR",{minimumFractio
 const fData=s=>s&&/^\d{4}-\d{2}-\d{2}$/.test(s)?s.split("-").reverse().join("/"):(s||"");
 const hoje=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 let tt;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),3200)}
-const status=m=>$("status").textContent=m;
+const status=m=>$("statusMsg").textContent=m;
 
 function calc(){
   const b=parseKg($("bruto").value),t=parseKg($("tara").value);
@@ -552,8 +552,8 @@ function calc(){
 ["q1","q2"].forEach(id=>$(id).addEventListener("blur",e=>{const n=parseKg(e.target.value);if(n!=null)e.target.value=fmt(n)}));
 
 function readForm(){const o={};FIELDS.forEach(f=>o[f]=$(f).value.trim());o.placa=o.placa.toUpperCase();o.bruto=parseKg(o.bruto);o.tara=parseKg(o.tara);o.q1=parseKg(o.q1);o.q2=parseKg(o.q2);o.liquido=o.bruto!=null&&o.tara!=null?o.bruto-o.tara:null;o.contratoCod=(cts.find(c=>c._id===o.contrato)||{}).cod||"";return o}
-function fillForm(o){FIELDS.forEach(f=>{const v=o[f];$(f).value=["bruto","tara","q1","q2"].includes(f)?fmt(v):(v??"")});$("status").value=o.status||"liberado";$("contrato").value=o.contrato||"";if($("contrato").value!==(o.contrato||""))$("contrato").value="";showCtSaldo();calc();$("hNum").textContent=o.numero||"nova"}
-function clearForm(){editing=null;pendingTemp=null;pendingPrev=null;fillForm({p1:"SOJA",data:hoje(),status:"fila"});$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?";$("hNum").title="Número provisório — confirmado ao salvar"}
+function fillForm(o){FIELDS.forEach(f=>{const v=o[f];$(f).value=["bruto","tara","q1","q2"].includes(f)?fmt(v):(v??"")});{const s=$("status"),v=o.status||"liberado";if(![...s.options].some(x=>x.value===v)){const op=document.createElement("option");op.value=v;op.textContent=ST[v]||v;op.dataset.tmp="1";s.appendChild(op)}[...s.options].forEach(x=>{if(x.dataset.tmp&&x.value!==v)x.remove()});s.value=v}$("contrato").value=o.contrato||"";if($("contrato").value!==(o.contrato||""))$("contrato").value="";showCtSaldo();calc();$("hNum").textContent=o.numero||"nova"}
+function clearForm(){editing=null;pendingTemp=null;pendingPrev=null;fillForm({p1:"SOJA",data:hoje(),status:"carregando"});$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?";$("hNum").title="Número provisório — confirmado ao salvar"}
 
 function renderHead(){$("hNome").textContent=cfg.nome;$("hSub").textContent=cfg.sub;$("hL1").textContent=cfg.l1;$("hL2").textContent=cfg.l2;$("hL3").textContent=cfg.l3;$("hCnpj").textContent="CNPJ: "+cfg.cnpj;$("hIe").textContent="Insc.  "+cfg.ie}
 function fillCfg(){["nome","sub","l1","l2","l3","cnpj","ie","ini"].forEach(k=>$("c_"+k).value=cfg[k]??"")}
@@ -583,6 +583,7 @@ function stamp(o,prev){
   if(!o.chegadaTs){o.chegadaTs=(o.data&&o.chegada)?new Date(o.data+"T"+o.chegada).toISOString():now.toISOString()}
   if(!o.chegada)o.chegada=hhmm(new Date(o.chegadaTs));
   if(o.status&&o.status!==prev.status&&!o[TSK[o.status]])o[TSK[o.status]]=now.toISOString();
+  if(!prev.numero&&!o.ordemTs)o.ordemTs=now.toISOString();
   if(o.status==="liberado"&&!o.saida)o.saida=hhmm(now);
   return o;
 }
@@ -850,28 +851,28 @@ async function registerFromOrder(o){
 const tsOf=o=>Date.parse(o.chegadaTs||((o.data&&o.chegada)?o.data+"T"+o.chegada:o.criadoEm||""))||Date.now();
 function dur(ms){const m=Math.max(0,Math.round(ms/60000));return m<60?m+" min":Math.floor(m/60)+"h"+String(m%60).padStart(2,"0")}
 const isToday=iso=>{if(!iso)return false;const d=new Date(iso),n=new Date();return d.toDateString()===n.toDateString()};
-const FLOW=[["autorizado","Autorização de embarque"],["fila","Com ordem"],["carregando","Carregando"],["carregado","Carregado"],["aguardlib","Esperando liberação"],["liberado","Liberado"]];
+const FLOW=[["autorizado","Autorização de embarque"],["carregando","Carregando"],["carregado","Carregado"],["aguardlib","Esperando liberação"],["liberado","Liberado"]];
 let pFilter="";
 function renderPatio(){
   const now=Date.now();
   const act=filaOrdenada();
   const cnt=s=>act.filter(o=>o.status===s).length;
   const lib=orders.filter(o=>o.status==="liberado"&&isToday(o.liberadoTs)).sort((a,b)=>Date.parse(b.liberadoTs)-Date.parse(a.liberadoTs));
-  const k=[[cnt("semordem")+cnt("autorizado")+cnt("fila")+cnt("carregando"),"para carregar",1],[cnt("semordem"),"aguardando autorização"],[cnt("autorizado"),"com autorização, sem ordem"],[cnt("fila")+cnt("carregando"),"com ordem / carregando"],[cnt("carregado")+cnt("aguardlib"),"carregados / esperando liberação"],[lib.length,"liberados hoje"]];
+  const k=[[cnt("semordem")+cnt("autorizado")+cnt("fila")+cnt("carregando"),"para carregar",1],[cnt("semordem"),"aguardando autorização"],[cnt("autorizado"),"com autorização, sem ordem"],[cnt("carregado")+cnt("aguardlib"),"carregados / esperando liberação"],[lib.length,"liberados hoje"]];
   $("kpis").innerHTML=k.map(([n,l,b])=>`<div class="kpi${b?" big":""}"><b>${n}</b><span>${l}</span></div>`).join("");
-  const F=[["","Todos",act.length],["semordem","Aguardando autorização",cnt("semordem")],...FLOW.slice(0,5).map(([s,t])=>[s,t,cnt(s)])];
+  const F=[["","Todos",act.length],["semordem","Aguardando autorização",cnt("semordem")],...FLOW.slice(0,4).map(([s,t])=>[s,t,cnt(s)])];
   $("chips").innerHTML=F.map(([s,t,n])=>`<button class="chip" data-f="${s}" aria-pressed="${pFilter===s}">${t} <b>${n}</b></button>`).join("");
   const rows=act.map((o,i)=>({o,seq:i+1})).filter(r=>!pFilter||r.o.status===pFilter);
   if(!rows.length){$("lanes").innerHTML='<div class="empty">'+(act.length?"Nenhum caminhão nesta situação.":"Nenhum caminhão no pátio. Registre a chegada acima.")+"</div>"}
   else $("lanes").innerHTML='<div class="scroll"><table class="stack fila"><thead><tr><th>Seq.</th><th>Placa</th><th>Caminhão</th><th>Motorista</th><th>Ordem</th><th>No pátio há</th><th>Situação</th></tr></thead><tbody>'+rows.map(({o,seq})=>{
     const st=o.status,w=now-tsOf(o),stT=Date.parse(o[TSK[st]]||"")||tsOf(o);
     const late=(st==="semordem"||st==="autorizado"||st==="fila")&&w>2*3600e3||st==="aguardlib"&&now-stT>3600e3;
-    const opts=(st==="semordem"?[["semordem","Aguardando autorização"]]:[]).concat(FLOW);
+    const opts=(st==="semordem"?[["semordem","Aguardando autorização"]]:[]).concat(st==="fila"?[FLOW[0],["fila","Com ordem"],...FLOW.slice(1)]:FLOW);
     const seg=`<select class="stsel s-${st}" data-id="${esc(o._id)}" aria-label="Situação de ${esc(o.placa||"caminhão")}"${readOnly?" disabled":""}>${opts.map(([s,t])=>`<option value="${s}"${st===s?" selected":""}>${t}</option>`).join("")}</select>`;
     const ct=(cts.find(c=>c._id===o.contrato)||{}).cod;
     return `<tr class="r-${st}${late?" late":""}"><td class="seq">${seq}º${o.fila!=null&&o.filaMovidaEm?`<br><small class="mv" title="${esc((o.filaMotivo?"Motivo: "+o.filaMotivo+" · ":"")+"alterada em "+new Date(o.filaMovidaEm).toLocaleString("pt-BR"))}">posição alterada</small>`:""}${readOnly?"":`<br><button class="lnkb mvb" data-a="mover" data-id="${esc(o._id)}">Mudar posição</button>`}</td><td><b class="plq">${esc(o.placa||"—")}</b></td><td>${esc(o.tipo||"—")}</td><td>${esc(o.motorista||"—")}</td>
       <td>${o.numero?`<button class="lnkb" data-a="abrir" data-id="${esc(o._id)}" title="Abrir a ordem">Nº ${esc(o.numero)}</button>`+(o.autEmb?"<br><small>Aut. "+esc(o.autEmb)+"</small>":"")+(ct?"<br><small>"+esc(ct)+"</small>":"")
-        :st==="autorizado"?`<span class="tag ok">Autorizado${ct?" · "+esc(ct):""}</span><br><button class="btn sm p em" data-a="ordem" data-st="fila" data-id="${esc(o._id)}">Emitir ordem</button><br><button class="lnkb" data-a="aut" data-id="${esc(o._id)}" style="font-size:13px">Trocar contrato</button> · <button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover</button>`
+        :st==="autorizado"?`<span class="tag ok">Autorizado${ct?" · "+esc(ct):""}</span><br><button class="btn sm p em" data-a="ordem" data-st="carregando" data-id="${esc(o._id)}">Emitir ordem</button><br><button class="lnkb" data-a="aut" data-id="${esc(o._id)}" style="font-size:13px">Trocar contrato</button> · <button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover</button>`
         :`<span class="tag">Aguardando autorização</span><br><button class="btn sm p em" data-a="aut" data-id="${esc(o._id)}">Autorização de embarque</button><br><button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover do pátio</button>`}</td>
       <td class="wait">${dur(w)}<br><small>chegou ${esc(o.chegada||"")}</small>${st!=="semordem"&&st!=="fila"?"<br><small>"+esc(ST[st].toLowerCase())+" há "+dur(now-stT)+"</small>":""}</td>
       <td class="sitc">${seg}</td>
@@ -898,7 +899,7 @@ async function patioClick(e){
   else if(a==="st"&&o.status==="semordem"){openAut(o);toast("Registre primeiro a autorização de embarque deste caminhão.")}
   else if(a==="st"&&!o.numero){emitir(o,b.dataset.st)}
   else if(a==="st"){if(o.status===b.dataset.st)return;if(b.dataset.st==="liberado"&&o.liquido==null)setTimeout(()=>toast("Atenção: "+(o.placa||"caminhão")+" liberado sem pesagem (bruto/tara)."),1200);b.disabled=true;await move(o,b.dataset.st)}
-  else if(a==="ordem"){emitir(o,"fila")}
+  else if(a==="ordem"){emitir(o,"carregando")}
   else if(a==="rm"){$("dlgMsg").textContent="Tirar o caminhão "+(o.placa||"")+" do pátio?";$("dlg").dataset.id=o._id;$("dlg").showModal()}
 }
 function filaOrdenada(){
@@ -987,7 +988,7 @@ $("fc").addEventListener("submit",async e=>{
 setInterval(()=>{if(!$("v-patio").hidden)renderPatio()},30000);
 
 /* ---------- Painel ---------- */
-const STAGES=[["semordem","Aguardando autorização"],["autorizado","Com autorização"],["fila","Com ordem"],["carregando","Carregando"],["carregado","Carregado"],["aguardlib","Esperando liberação"]];
+const STAGES=[["semordem","Aguardando autorização"],["autorizado","Com autorização"],["carregando","Carregando"],["carregado","Carregado"],["aguardlib","Esperando liberação"]];
 const dkey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const libDay=o=>o.liberadoTs?dkey(new Date(o.liberadoTs)):(o.data||"");
 const ton=kg=>fmt(kg/1000,1)+" t";

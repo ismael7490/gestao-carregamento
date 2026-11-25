@@ -155,7 +155,9 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
 .chegou h2{grid-column:1/-1;margin:0;font-size:17px}
 .chegou label{font-size:12px;font-weight:600;color:var(--muted)}
 .chegou input{border:1.5px solid var(--muted);border-radius:6px;color:var(--ink)}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.fbar{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.fbar .btn{flex:none}
 .chip{min-height:40px;padding:6px 14px;border-radius:20px;border:1.5px solid var(--green);background:var(--card);color:var(--ink);font:600 14px Archivo,sans-serif;cursor:pointer}
 .chip[aria-pressed=true]{background:var(--green);color:#fff}
 .fila{font-size:15px}
@@ -318,7 +320,7 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
       <label>Produto<input id="c2_prod" value="SOJA"></label>
       <button class="btn p" type="submit">Pôr no pátio (sem ordem)</button>
     </form>
-    <div class="chips" id="chips" role="group" aria-label="Filtrar pela situação"></div>
+    <div class="fbar"><div class="chips" id="chips" role="group" aria-label="Filtrar pela situação"></div><button class="btn" id="pPrint" type="button">Imprimir fila (PDF)</button></div>
     <div id="lanes"></div>
     <details class="saidos"><summary id="saiSum">Liberados hoje</summary><div id="saidos"></div></details>
   </section>
@@ -967,7 +969,7 @@ function renderCt(){
     <div class="saldo"><span>Saldo</span><b>${fmt(s.saldo)} kg</b><small>${tons(s.saldo)}</small></div></div>
     ${s.saldo<0?'<p style="color:var(--red);font-weight:700;margin:10px 0 0">Carregado acima do contratado.</p>':""}
     ${s.pend?`<p style="margin:10px 0 0;color:var(--muted)">${s.pend} ordem(ns) ainda sem pesagem — não entram no carregado até lançar bruto e tara.</p>`:""}
-    <div class="acts"><button class="btn p sm" data-a="ordem">Nova ordem neste contrato</button><button class="btn sm" data-a="edit">Editar</button><button class="btn sm" data-a="enc">${c.status==="encerrado"?"Reabrir":"Encerrar contrato"}</button>${s.n?"":'<button class="btn sm del" data-a="rm">Excluir</button>'}<button class="btn sm" data-a="fechar">Fechar</button></div>
+    <div class="acts"><button class="btn p sm" data-a="ordem">Nova ordem neste contrato</button><button class="btn sm" data-a="edit">Editar</button><button class="btn sm" data-a="enc">${c.status==="encerrado"?"Reabrir":"Encerrar contrato"}</button>${s.n?"":'<button class="btn sm del" data-a="rm">Excluir</button>'}<button class="btn sm" data-a="rel">Relatório do contrato (PDF)</button><button class="btn sm" data-a="fechar">Fechar</button></div>
     ${cs.length?'<table class="stack"><thead><tr><th>Nº</th><th>Data</th><th>Placa</th><th>Motorista</th><th>Situação</th><th style="text-align:right">Líquido (kg)</th></tr></thead><tbody>'+cs.map(o=>`<tr><td><b>${esc(o.numero)}</b></td><td>${esc(fData(o.data))}</td><td>${esc(o.placa)}</td><td>${esc(o.motorista)}</td><td>${esc(ST[o.status]||"Liberado")}</td><td class="n">${o.liquido!=null?esc(fmt(o.liquido)):"—"}</td></tr>`).join("")+"</tbody></table>":'<div class="empty">Nenhuma carga neste contrato ainda.</div>'}</div>`;
 }
 function ctClear(){ctEdit=null;["ct_cod","ct_emp","ct_var","ct_ori","ct_dest","ct_local","ct_qtd","ct_obs"].forEach(i=>$(i).value="");$("ct_mat").value="SOJA";$("ct_data").value=hoje();$("ct_h").textContent="Novo contrato";$("ct_btn").textContent="Criar contrato"}
@@ -992,6 +994,7 @@ $("ct_det").addEventListener("click",async e=>{
   const b=e.target.closest("button[data-a]");if(!b)return;const c=cts.find(x=>x._id===ctSel);if(!c)return;
   const a=b.dataset.a;
   if(a==="fechar"){ctSel=null;renderCt()}
+  else if(a==="rel"){b.disabled=true;try{await relatorioContrato(c)}finally{b.disabled=false}}
   else if(a==="ordem"){clearForm();$("contrato").value=c._id;$("contrato").dispatchEvent(new Event("change"));show("nova")}
   else if(a==="edit"){ctEdit=c._id;$("ct_cod").value=c.cod;$("ct_emp").value=c.empresa;$("ct_mat").value=c.material;$("ct_var").value=c.variedade||"";$("ct_ori").value=c.origem||"";$("ct_dest").value=c.destino||"";$("ct_local").value=c.local||"";$("ct_qtd").value=fmt(c.qtd);$("ct_data").value=c.data||"";$("ct_obs").value=c.obs||"";$("ct_h").textContent="Editar contrato "+c.cod;$("ct_btn").textContent="Salvar alterações";$("ct_emp").focus()}
   else if(a==="enc"){if(!db||readOnly){toast("Sem permissão.");return}try{await db.collection("contratos").doc(c._id).update({status:c.status==="encerrado"?"aberto":"encerrado"});toast(c.status==="encerrado"?"Contrato reaberto.":"Contrato encerrado.")}catch(err){dbErr(err)}}
@@ -1272,6 +1275,100 @@ function renderPainel(){
  $("v-painel").addEventListener("mouseleave",()=>tip.hidden=true);
  $("v-painel").addEventListener("click",e=>{const el=e.target.closest("[data-tip]");if(el){showTip(el,e.clientX,e.clientY);clearTimeout(showTip.t);showTip.t=setTimeout(()=>tip.hidden=true,2500)}});}
 setInterval(renderPainel,60000);
+
+/* ---------- Relatórios em PDF ---------- */
+const SHORT={semordem:"Aguard. autorização",autorizado:"Aut. de embarque",fila:"Com ordem",carregando:"Carregando",carregado:"Carregado",aguardlib:"Aguard. liberação",liberado:"Liberado"};
+function rpDoc(orient){return new window.jspdf.jsPDF({unit:"mm",format:"a4",orientation:orient})}
+function rpTop(d,title,sub){
+  const W=d.internal.pageSize.getWidth(),lw=46,lh=lw*112/427;
+  d.addImage(LOGO,"PNG",12,9,lw,lh,"logo","FAST");
+  d.setFont("helvetica","bold");d.setFontSize(15);d.setTextColor(25);d.text(title,W-12,14.5,{align:"right"});
+  d.setFont("helvetica","normal");d.setFontSize(9);d.setTextColor(95);d.text(sub,W-12,20,{align:"right"});
+  d.setFontSize(8);d.text([cfg.l1,cfg.l2,cfg.l3].filter(Boolean).join(" - ")+"   CNPJ "+(cfg.cnpj||""),W-12,24.5,{align:"right"});
+  d.setDrawColor(47,93,58);d.setLineWidth(.6);d.line(12,28,W-12,28);
+  return 34;
+}
+function rpCell(d,t,w){t=String(t??"");if(d.getTextWidth(t)<=w-2.4)return t;while(t.length>1&&d.getTextWidth(t+"…")>w-2.4)t=t.slice(0,-1);return t.trimEnd()+"…"}
+/* cols: [{t,w,al}] ; rows: arrays de texto ; bold: índices de linha em negrito ; mark: função linha->[r,g,b] da faixa à esquerda */
+function rpTable(d,y,cols,rows,o={}){
+  const W=d.internal.pageSize.getWidth(),H=d.internal.pageSize.getHeight(),rh=o.rh||6.6,x0=12;
+  const head=()=>{d.setFillColor(47,93,58);d.rect(x0,y,W-24,rh+0.6,"F");d.setFont("helvetica","bold");d.setFontSize(8);d.setTextColor(255);
+    let x=x0;cols.forEach(c=>{const tx=c.al==="r"?x+c.w-1.2:x+1.2;d.text(rpCell(d,c.t,c.w),tx,y+4.5,{align:c.al==="r"?"right":"left"});x+=c.w});y+=rh+0.6};
+  head();
+  rows.forEach((r,i)=>{
+    if(y+rh>H-16){d.addPage();y=14;head()}
+    if(i%2===1){d.setFillColor(244,246,244);d.rect(x0,y,W-24,rh,"F")}
+    if(o.mark){const m=o.mark(i);if(m){d.setFillColor(...m);d.rect(x0,y,1.2,rh,"F")}}
+    const b=o.bold&&o.bold.includes(i);d.setFont("helvetica",b?"bold":"normal");d.setFontSize(8.5);d.setTextColor(25);
+    let x=x0;cols.forEach((c,j)=>{const tx=c.al==="r"?x+c.w-1.2:x+1.2+(j===0&&o.mark?1:0);d.text(rpCell(d,r[j],c.w),tx,y+4.4,{align:c.al==="r"?"right":"left"});x+=c.w});
+    d.setDrawColor(225);d.setLineWidth(.15);d.line(x0,y+rh,W-12,y+rh);y+=rh;
+  });
+  return y;
+}
+function rpFooter(d){
+  const n=d.getNumberOfPages(),W=d.internal.pageSize.getWidth(),H=d.internal.pageSize.getHeight(),em=new Date().toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"});
+  for(let i=1;i<=n;i++){d.setPage(i);d.setFont("helvetica","normal");d.setFontSize(7.5);d.setTextColor(120);
+    d.text("Gestão de Carregamento - "+(cfg.nome||"")+" "+(cfg.sub||""),12,H-8);d.text(`Emitido em ${em}  ·  Página ${i} de ${n}`,W-12,H-8,{align:"right"})}
+}
+async function rpSave(d,nome){
+  if(!dl){toast("Este visualizador não permite baixar arquivos. Abra o app no navegador.");return}
+  try{await dl.save({filename:nome,data:d.output("arraybuffer")});toast("PDF pronto: "+nome)}catch(e){if(e&&e.code!=="declined")toast("Não foi possível baixar o PDF.")}
+}
+const RGB={semordem:[183,121,31],autorizado:[95,125,26],fila:[47,93,58],carregando:[29,58,143],carregado:[14,124,134],aguardlib:[123,63,160]};
+async function imprimirFila(){
+  if(!window.jspdf){toast("O gerador de PDF não carregou. Recarregue a página.");return}
+  const lista=filaOrdenada(),now=Date.now();
+  const rows=lista.map((o,i)=>({o,seq:i+1})).filter(r=>!pFilter||r.o.status===pFilter);
+  const d=rpDoc("landscape"),agora=new Date();
+  const fil=pFilter?" · filtro: "+(pFilter==="semordem"?"Aguardando autorização":ST[pFilter]):"";
+  let y=rpTop(d,"Fila de embarque",`Pátio em ${agora.toLocaleDateString("pt-BR")} às ${hhmm(agora)} · ${rows.length} caminhão(ões)${fil}`);
+  const cnt=s=>lista.filter(o=>o.status===s).length;
+  const res=[["Para carregar",cnt("semordem")+cnt("autorizado")+cnt("fila")+cnt("carregando")],["Aguardando autorização",cnt("semordem")],["Com autorização",cnt("autorizado")],["Carregando",cnt("carregando")+cnt("fila")],["Carregados / aguard. liberação",cnt("carregado")+cnt("aguardlib")]];
+  const bw=(d.internal.pageSize.getWidth()-24-4*4)/5;
+  res.forEach(([l,v],i)=>{const x=12+i*(bw+4);d.setFillColor(i?240:47,i?245:93,i?241:58);d.roundedRect(x,y,bw,14,2,2,"F");d.setTextColor(i?25:255);d.setFont("helvetica","bold");d.setFontSize(14);d.text(String(v),x+4,y+7.2);d.setFont("helvetica","normal");d.setFontSize(8);d.setTextColor(i?90:235);d.text(l,x+4,y+11.6)});
+  y+=20;
+  const cols=[{t:"Seq.",w:13},{t:"Placa",w:24},{t:"Caminhão",w:25},{t:"Motorista",w:42},{t:"Ordem",w:17},{t:"Contrato",w:22},{t:"Destino",w:32},{t:"Chegada",w:16},{t:"No pátio há",w:20,al:"r"},{t:"Situação",w:32},{t:"Observação",w:30}];
+  const sum=cols.reduce((s,c)=>s+c.w,0);cols[cols.length-1].w+=d.internal.pageSize.getWidth()-24-sum;
+  const data=rows.map(({o,seq})=>{const ct=(cts.find(c=>c._id===o.contrato)||{}).cod||o.contratoCod||"";
+    const obs=o.filaMovidaEm?("Posição alterada"+(o.filaMotivo?": "+o.filaMotivo:"")):"";
+    return [seq+"º",o.placa||"",o.tipo||"",o.motorista||"",o.numero||"-",ct,o.destino||"",o.chegada||"",dur(now-tsOf(o)),SHORT[o.status]||ST[o.status]||"",obs]});
+  if(!data.length){d.setFontSize(11);d.setTextColor(90);d.text("Nenhum caminhão no pátio.",12,y+6)}
+  else rpTable(d,y,cols,data,{mark:i=>RGB[rows[i].o.status]});
+  rpFooter(d);
+  const k=dkey(agora);await rpSave(d,`fila-de-embarque-${k}-${hhmm(agora).replace(":","h")}.pdf`);
+}
+async function relatorioContrato(c){
+  if(!window.jspdf){toast("O gerador de PDF não carregou. Recarregue a página.");return}
+  const d=rpDoc("portrait"),W=d.internal.pageSize.getWidth(),s=ctStats(c);
+  let y=rpTop(d,"Relatório do contrato "+c.cod,(c.empresa||"")+" · "+(c.status==="encerrado"?"encerrado":"aberto"));
+  // dados do contrato
+  const info=[["Empresa",c.empresa],["Material",[c.material,c.variedade].filter(Boolean).join(" ")],["Origem",c.origem],["Destino",c.destino||c.empresa],["Local de carregamento",c.local],["Data do contrato",fData(c.data)],["Observação",c.obs]].filter(x=>x[1]);
+  d.setFontSize(9);info.forEach(([k,v],i)=>{const col=i%2,row=Math.floor(i/2),x=12+col*93,yy=y+row*6.2;d.setFont("helvetica","bold");d.setTextColor(90);d.text(k+":",x,yy);d.setFont("helvetica","normal");d.setTextColor(25);d.text(rpCell(d,v,93-38),x+38,yy)});
+  y+=Math.ceil(info.length/2)*6.2+4;
+  // resumo
+  const bx=[["Quantidade contratada",c.qtd],["Carregado",s.car],["Saldo",s.saldo]],bw=(W-24-8)/3;
+  bx.forEach(([l,v],i)=>{const x=12+i*(bw+4),dark=i===2;d.setFillColor(dark?47:240,dark?93:245,dark?58:241);d.roundedRect(x,y,bw,22,2,2,"F");
+    d.setFont("helvetica","normal");d.setFontSize(8.5);d.setTextColor(dark?235:90);d.text(l,x+4,y+5.5);
+    d.setFont("helvetica","bold");d.setFontSize(15);d.setTextColor(dark?255:25);d.text(fmt(v)+" kg",x+4,y+13);
+    d.setFont("helvetica","normal");d.setFontSize(8);d.setTextColor(dark?225:110);d.text(fmt(v/1000,1)+" t  ·  "+fmt(v/60,0)+" sacas",x+4,y+18.5)});
+  y+=27;
+  const pct=Math.min(100,s.pct);d.setFillColor(227,239,229);d.roundedRect(12,y,W-24,4,2,2,"F");d.setFillColor(...(s.saldo<0?[220,60,61]:[42,122,62]));if(pct>0)d.roundedRect(12,y,(W-24)*pct/100,4,2,2,"F");
+  d.setFont("helvetica","normal");d.setFontSize(8.5);d.setTextColor(60);
+  y+=9;d.text(`${fmt(c.qtd?s.car/c.qtd*100:0,1)}% carregado · ${s.n-s.pend} carga(s) pesada(s)${s.pend?` · ${s.pend} ordem(ns) ainda sem pesagem (não entram no carregado)`:""}${s.saldo<0?` · ATENÇÃO: ${fmt(-s.saldo)} kg acima do contratado`:""}`,12,y);
+  y+=6;
+  // cargas
+  d.setFont("helvetica","bold");d.setFontSize(11);d.setTextColor(25);d.text("Cargas do contrato",12,y);d.setFont("helvetica","normal");d.setFontSize(8.5);d.setTextColor(100);d.text("pesos em kg",W-12,y,{align:"right"});y+=3;
+  const cs=cargas(c._id).sort((a,b)=>a.numero.localeCompare(b.numero));let acc=0;
+  const rows=cs.map(o=>{if(o.liquido!=null)acc+=o.liquido;const dt=fData(o.data);return [o.numero,dt.length===10?dt.slice(0,6)+dt.slice(8):dt,o.placa||"",o.motorista||"",o.tipo||"",SHORT[o.status]||"",o.bruto!=null?fmt(o.bruto):"-",o.tara!=null?fmt(o.tara):"-",o.liquido!=null?fmt(o.liquido):"-",o.liquido!=null?fmt(acc):""]});
+  const tb=cs.reduce((a,o)=>a+(o.bruto||0),0),tt=cs.reduce((a,o)=>a+(o.tara||0),0);
+  rows.push(["Total","","",cs.length+(cs.length===1?" carga":" cargas"),"","",fmt(tb),fmt(tt),fmt(s.car),""]);
+  const cols=[{t:"Nº",w:12},{t:"Data",w:14},{t:"Placa",w:19},{t:"Motorista",w:24},{t:"Caminhão",w:17},{t:"Situação",w:28},{t:"Bruto",w:17,al:"r"},{t:"Tara",w:16,al:"r"},{t:"Líquido",w:18,al:"r"},{t:"Acumulado",w:20,al:"r"}];
+  const sum=cols.reduce((a,x)=>a+x.w,0);cols[3].w+=W-24-sum;
+  if(cs.length)rpTable(d,y+1,cols,rows,{bold:[rows.length-1]});else{d.setFont("helvetica","normal");d.setFontSize(10);d.setTextColor(90);d.text("Nenhuma carga neste contrato ainda.",12,y+7)}
+  rpFooter(d);
+  await rpSave(d,`relatorio-contrato-${(c.cod||"").replace(/[^\w-]/g,"")}-${dkey(new Date())}.pdf`);
+}
+$("pPrint").onclick=async()=>{const b=$("pPrint");b.disabled=true;try{await imprimirFila()}finally{b.disabled=false}};
 
 /* ---------- Navegação ---------- */
 function show(v){

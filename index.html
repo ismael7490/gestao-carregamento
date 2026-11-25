@@ -93,7 +93,7 @@ body:not(.locked) .gate{display:none}
 .badge{background:#c62828;color:#fff;border-radius:10px;padding:1px 7px;font-size:12px;margin-left:4px}
 .ustat{display:inline-block;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap}
 .ustat.pendente{background:#fbe7c6;color:#7a4b00}.ustat.ativo{background:#dcefe0;color:#1e5a2c}.ustat.bloqueado{background:#f6d4d4;color:#8a1c1c}
-body.ro #bar,body.ro #fc,body.ro .seg,body.ro #fct,body.ro #fv,body.ro #fm,body.ro #cf button,body.ro .btn.del,body.ro [data-a=ordem],body.ro #ct_det [data-a=edit],body.ro #ct_det [data-a=enc],body.ro #lanes .em,body.ro #lanes .rm,body.ro #saidos [data-a=st]{display:none!important}
+body.ro #bar,body.ro #fc,body.ro .seg,body.ro #fct,body.ro #fv,body.ro #fm,body.ro #cf button,body.ro .btn.del,body.ro [data-a=ordem],body.ro #ct_det [data-a=edit],body.ro #ct_det [data-a=enc],body.ro #lanes .em,body.ro #lanes [data-a=aut],body.ro #lanes .rm,body.ro #saidos [data-a=st]{display:none!important}
 .sit{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-weight:600;font-size:14px}
 select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radius:8px;border:1.5px solid var(--muted);background:var(--card);color:var(--ink)}
 .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
@@ -116,17 +116,18 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
 .fila tr.late .wait{color:var(--red)}
 .fila tr.late td:first-child{box-shadow:inset 5px 0 0 var(--red)}
 .fila tr td:first-child{box-shadow:inset 5px 0 0 var(--c,transparent)}
-.r-semordem{--c:#b7791f}.r-fila{--c:#2f5d3a}.r-carregando{--c:#1d3a8f}.r-carregado{--c:#0e7c86}.r-aguardlib{--c:#7b3fa0}
+.r-semordem{--c:#b7791f}.r-autorizado{--c:#5f7d1a}.r-fila{--c:#2f5d3a}.r-carregando{--c:#1d3a8f}.r-carregado{--c:#0e7c86}.r-aguardlib{--c:#7b3fa0}
 .lnkb{background:none;border:0;padding:6px 0;min-height:36px;font:800 15px Archivo,sans-serif;color:var(--green);text-decoration:underline;text-underline-offset:3px;cursor:pointer;white-space:nowrap}
 .fila .em{margin-top:6px;white-space:nowrap}
 .lnkb.rm{font:600 13px Archivo,sans-serif;color:var(--red);padding:4px 0;min-height:32px}
 .scroll{overflow-x:auto}
+.tag.ok{background:#e4efcf;color:#3d5a10}
 .tag{display:inline-block;background:#fbe7c6;color:#7a4b00;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap}
 .seg{display:flex;flex-wrap:nowrap;gap:4px}
 .sg{min-height:36px;padding:4px 8px;border-radius:6px;border:1.5px solid rgba(0,0,0,.2);background:transparent;color:var(--ink);font:600 12.5px Archivo,sans-serif;cursor:pointer;white-space:nowrap}
 .sg:hover{border-color:var(--green)}
 .sg[aria-pressed=true]{color:#fff;border-color:transparent}
-.sg.s-fila[aria-pressed=true]{background:#2f5d3a}.sg.s-carregando[aria-pressed=true]{background:#1d3a8f}.sg.s-carregado[aria-pressed=true]{background:#0e7c86}.sg.s-aguardlib[aria-pressed=true]{background:#7b3fa0}.sg.s-liberado[aria-pressed=true]{background:#444}
+.sg.s-autorizado[aria-pressed=true]{background:#5f7d1a}.sg.s-fila[aria-pressed=true]{background:#2f5d3a}.sg.s-carregando[aria-pressed=true]{background:#1d3a8f}.sg.s-carregado[aria-pressed=true]{background:#0e7c86}.sg.s-aguardlib[aria-pressed=true]{background:#7b3fa0}.sg.s-liberado[aria-pressed=true]{background:#444}
 .sg:disabled{opacity:.5}
 .lanes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:start}
 .card.c-semordem{border-left-color:#b7791f}.card.c-carregando{border-left-color:#1d3a8f}.card.c-carregado{border-left-color:#7b3fa0}
@@ -253,6 +254,7 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
 
       <div style="margin-top:8px;--lw:170px">
         <div class="row first ctrow"><label for="contrato">Contrato:</label><div class="ctpick"><select id="contrato"><option value="">Sem contrato — escolha para preencher</option></select><span id="ctSaldo"></span></div></div>
+        <div class="row"><label for="autEmb">Autorização de embarque:</label><input id="autEmb" placeholder="Nº da autorização"></div>
         <div class="row"><label for="origem">Origem:</label><input id="origem"></div>
         <div class="row"><label for="destino">Destino:</label><input id="destino"></div>
         <div class="row"><label for="local">Local de Carregamento:</label><input id="local"></div>
@@ -387,6 +389,14 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
 </div>
 
 <div class="toast" id="toast" role="status"></div>
+<dialog id="adlg"><form id="af" class="pform" style="margin:0;min-width:min(420px,80vw)" autocomplete="off">
+  <h2 id="a_t" style="grid-column:1/-1;margin:0 0 4px;font-size:19px">Autorização de embarque</h2>
+  <label style="grid-column:1/-1">Nº da autorização de embarque *<input id="a_num" required></label>
+  <label style="grid-column:1/-1">Contrato<select id="a_ct"></select></label>
+  <label>Quantidade autorizada (kg)<input id="a_qtd" inputmode="numeric"></label>
+  <label>Observação<input id="a_obs"></label>
+  <div class="full" style="justify-content:flex-end"><button class="btn sm" type="button" id="a_cancel">Cancelar</button><button class="btn sm p" type="submit">Salvar autorização</button></div>
+</form></dialog>
 <dialog id="udlg"><form id="uf" method="dialog" class="pform" style="margin:0;min-width:min(420px,80vw)">
   <h2 id="u_t" style="grid-column:1/-1;margin:0 0 4px;font-size:19px">Liberar acesso</h2>
   <label style="grid-column:1/-1">Nome<input id="u_nome" required></label>
@@ -609,10 +619,10 @@ else {
 const $=id=>document.getElementById(id);
 const LOGO=window.__LOGO;
 $("hLogo").src=LOGO;
-const FIELDS=["origem","destino","local","p1","v1","q1","p2","v2","q2","bruto","tara","motorista","placa","tipo","cidade","chegada","saida","data","conferido","obs","status","contrato"];
-const ST={semordem:"Aguardando ordem",fila:"Com ordem",carregando:"Carregando",carregado:"Carregado",aguardlib:"Esperando liberação",liberado:"Liberado"};
-const TSK={semordem:"chegadaTs",fila:"ordemTs",carregando:"carregandoTs",carregado:"carregadoTs",aguardlib:"aguardlibTs",liberado:"liberadoTs"};
-let all=[],pendingTemp=null,veics=[],mots=[],dlgFn=null,cts=[],ctSel=null,ctEdit=null;
+const FIELDS=["origem","destino","local","p1","v1","q1","p2","v2","q2","bruto","tara","motorista","placa","tipo","cidade","chegada","saida","data","conferido","obs","status","contrato","autEmb"];
+const ST={semordem:"Aguardando autorização",autorizado:"Com autorização de embarque",fila:"Com ordem",carregando:"Carregando",carregado:"Carregado",aguardlib:"Esperando liberação",liberado:"Liberado"};
+const TSK={semordem:"chegadaTs",autorizado:"autorizadoTs",fila:"ordemTs",carregando:"carregandoTs",carregado:"carregadoTs",aguardlib:"aguardlibTs",liberado:"liberadoTs"};
+let all=[],pendingTemp=null,pendingPrev=null,autO=null,veics=[],mots=[],dlgFn=null,cts=[],ctSel=null,ctEdit=null;
 const DEF={nome:"Produtiva",sub:"SEMENTES",l1:"Rod BR 020 KM 130",l2:"Roda Velha",l3:"São Desiderio BA",cnpj:"11.142.101/0006-28",ie:"10.405.886-8",ini:1};
 const HOLDER="h"+Math.random().toString(36).slice(2);
 let db=null,cfg={...DEF},orders=[],editing=null,dl=null,readOnly=false;
@@ -637,7 +647,7 @@ function calc(){
 
 function readForm(){const o={};FIELDS.forEach(f=>o[f]=$(f).value.trim());o.placa=o.placa.toUpperCase();o.bruto=parseKg(o.bruto);o.tara=parseKg(o.tara);o.q1=parseKg(o.q1);o.q2=parseKg(o.q2);o.liquido=o.bruto!=null&&o.tara!=null?o.bruto-o.tara:null;o.contratoCod=(cts.find(c=>c._id===o.contrato)||{}).cod||"";return o}
 function fillForm(o){FIELDS.forEach(f=>{const v=o[f];$(f).value=["bruto","tara","q1","q2"].includes(f)?fmt(v):(v??"")});$("status").value=o.status||"liberado";$("contrato").value=o.contrato||"";if($("contrato").value!==(o.contrato||""))$("contrato").value="";showCtSaldo();calc();$("hNum").textContent=o.numero||"nova"}
-function clearForm(){editing=null;pendingTemp=null;fillForm({p1:"SOJA",data:hoje(),status:"fila"});$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?";$("hNum").title="Número provisório — confirmado ao salvar"}
+function clearForm(){editing=null;pendingTemp=null;pendingPrev=null;fillForm({p1:"SOJA",data:hoje(),status:"fila"});$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?";$("hNum").title="Número provisório — confirmado ao salvar"}
 
 function renderHead(){$("hNome").textContent=cfg.nome;$("hSub").textContent=cfg.sub;$("hL1").textContent=cfg.l1;$("hL2").textContent=cfg.l2;$("hL3").textContent=cfg.l3;$("hCnpj").textContent="CNPJ: "+cfg.cnpj;$("hIe").textContent="Insc.  "+cfg.ie}
 function fillCfg(){["nome","sub","l1","l2","l3","cnpj","ie","ini"].forEach(k=>$("c_"+k).value=cfg[k]??"")}
@@ -676,11 +686,11 @@ async function save(){
   const o=readForm();
   if(!o.motorista&&!o.placa&&!o.destino){toast("Preencha pelo menos destino, motorista ou placa.");return null}
   try{
-    const prev=editing?(orders.find(x=>x.numero===editing)||{}):{};
+    const prev=editing?(orders.find(x=>x.numero===editing)||{}):(pendingPrev||{});
     stamp(o,prev);
     if(editing){await db.collection("ordens").doc(editing).set({...o,numero:editing,criadoEm:prev.criadoEm||new Date().toISOString(),editadoEm:new Date().toISOString()});toast("Ordem "+editing+" atualizada.");}
     else{const id=await claim(o);editing=id;toast("Ordem "+id+" salva.");
-      if(pendingTemp){const t=pendingTemp;pendingTemp=null;try{await db.collection("ordens").doc(t).delete()}catch(e){}}}
+      if(pendingTemp){const t=pendingTemp;pendingTemp=null;pendingPrev=null;try{await db.collection("ordens").doc(t).delete()}catch(e){}}}
     fillForm({...o,numero:editing});
     registerFromOrder(o);
     const c=cts.find(x=>x._id===o.contrato);
@@ -711,7 +721,8 @@ function drawVia(d,o,y0,via){
   d.setTextColor(198,40,40);d.setFont("helvetica","bold");d.setFontSize(15);d.text(o.numero||"",X+W-3,y+21.5,{align:"right"});
   y+=26;
   [["Origem:",o.origem],["Destino:",o.destino],["Local de Carregamento:",o.local]].forEach(([l,v],i)=>{d.rect(X,y,W,rh);lbl(l,X+1.5,y+3.6);val(v,X+38,y+3.8);
-    if(i===0&&o.contratoCod){d.line(X+W/2+20,y,X+W/2+20,y+rh);lbl("CONTRATO:",X+W/2+21.5,y+3.6);val(o.contratoCod,X+W/2+38,y+3.8)}y+=rh});
+    if(i===0&&o.contratoCod){d.line(X+W/2+20,y,X+W/2+20,y+rh);lbl("CONTRATO:",X+W/2+21.5,y+3.6);val(o.contratoCod,X+W/2+38,y+3.8)}
+    if(i===1&&o.autEmb){d.line(X+W/2+20,y,X+W/2+20,y+rh);lbl("AUT. EMBARQUE:",X+W/2+21.5,y+3.6);val(o.autEmb,X+W/2+46,y+3.8)}y+=rh});
   y+=2;
   const cw=W/3;
   d.rect(X,y,W,rh*3);for(let i=1;i<3;i++)d.line(X+cw*i,y,X+cw*i,y+rh*3);d.line(X,y+rh,X+W,y+rh);d.line(X,y+rh*2,X+W,y+rh*2);
@@ -749,7 +760,7 @@ async function pdf(o){
 /* ---------- Histórico ---------- */
 function renderList(){
   const q=$("busca").value.trim().toLowerCase();
-  const rows=orders.filter(o=>!q||[o.numero,o.contratoCod,o.motorista,o.placa,o.tipo,o.destino,o.p1,o.cidade,fData(o.data),ST[o.status]].join(" ").toLowerCase().includes(q));
+  const rows=orders.filter(o=>!q||[o.numero,o.autEmb,o.contratoCod,o.motorista,o.placa,o.tipo,o.destino,o.p1,o.cidade,fData(o.data),ST[o.status]].join(" ").toLowerCase().includes(q));
   if(!rows.length){$("lista").innerHTML='<div class="empty">'+(orders.length?"Nenhuma ordem encontrada.":"Nenhuma ordem salva ainda. Preencha a primeira na aba Nova ordem.")+'</div>';return}
   $("lista").innerHTML='<table class="stack"><thead><tr><th>Nº</th><th>Data</th><th>Motorista</th><th>Placa</th><th>Tipo</th><th>Destino</th><th>Situação</th><th style="text-align:right">Líquido (kg)</th><th></th></tr></thead><tbody>'+
   rows.map(o=>`<tr><td><b>${esc(o.numero)}</b></td><td>${esc(fData(o.data))}</td><td>${esc(o.motorista)}</td><td>${esc(o.placa)}</td><td>${esc(o.tipo)}</td><td>${esc(o.destino)}</td><td>${esc(ST[o.status]||"Liberado")}</td><td class="n">${esc(fmt(o.liquido))}</td><td class="acts"><button class="btn sm" data-a="abrir" data-id="${esc(o.numero)}">Abrir</button> <button class="btn sm" data-a="pdf" data-id="${esc(o.numero)}">PDF</button> <button class="btn sm del" data-a="del" data-id="${esc(o.numero)}">Excluir</button></td></tr>`).join("")+'</tbody></table>';
@@ -767,7 +778,7 @@ $("dlgYes").onclick=async()=>{if(dlgFn){const f=dlgFn;dlgFn=null;$("dlg").close(
 $("busca").addEventListener("input",renderList);
 $("csv").onclick=async()=>{
   if(!dl){toast("Este visualizador não permite baixar arquivos.");return}
-  const cols=["numero","data","contratoCod","origem","destino","local","p1","v1","q1","p2","v2","q2","bruto","tara","liquido","motorista","placa","tipo","cidade","chegada","saida","status","conferido","obs"];
+  const cols=["numero","data","autEmb","contratoCod","origem","destino","local","p1","v1","q1","p2","v2","q2","bruto","tara","liquido","motorista","placa","tipo","cidade","chegada","saida","status","conferido","obs"];
   const c=v=>{v=typeof v==="number"?String(v).replace(".",","):String(v??"");return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
   const txt="﻿"+cols.join(";")+"\n"+orders.map(o=>cols.map(k=>c(k==="data"?fData(o[k]):o[k])).join(";")).join("\n");
   try{await dl.save({filename:"ordens-carregamento.csv",data:txt})}catch(e){if(e&&e.code!=="declined")toast("Não foi possível exportar.")}
@@ -933,26 +944,28 @@ async function registerFromOrder(o){
 const tsOf=o=>Date.parse(o.chegadaTs||((o.data&&o.chegada)?o.data+"T"+o.chegada:o.criadoEm||""))||Date.now();
 function dur(ms){const m=Math.max(0,Math.round(ms/60000));return m<60?m+" min":Math.floor(m/60)+"h"+String(m%60).padStart(2,"0")}
 const isToday=iso=>{if(!iso)return false;const d=new Date(iso),n=new Date();return d.toDateString()===n.toDateString()};
-const FLOW=[["fila","Com ordem"],["carregando","Carregando"],["carregado","Carregado"],["aguardlib","Esperando liberação"],["liberado","Liberado"]];
+const FLOW=[["autorizado","Autorização de embarque"],["fila","Com ordem"],["carregando","Carregando"],["carregado","Carregado"],["aguardlib","Esperando liberação"],["liberado","Liberado"]];
 let pFilter="";
 function renderPatio(){
   const now=Date.now();
   const act=all.filter(o=>o.status&&o.status!=="liberado"&&ST[o.status]).sort((a,b)=>tsOf(a)-tsOf(b));
   const cnt=s=>act.filter(o=>o.status===s).length;
   const lib=orders.filter(o=>o.status==="liberado"&&isToday(o.liberadoTs)).sort((a,b)=>Date.parse(b.liberadoTs)-Date.parse(a.liberadoTs));
-  const k=[[cnt("semordem")+cnt("fila")+cnt("carregando"),"para carregar",1],[cnt("semordem"),"sem ordem"],[cnt("fila"),"com ordem"],[cnt("carregando"),"carregando"],[cnt("carregado")+cnt("aguardlib"),"carregados / esperando liberação"],[lib.length,"liberados hoje"]];
+  const k=[[cnt("semordem")+cnt("autorizado")+cnt("fila")+cnt("carregando"),"para carregar",1],[cnt("semordem"),"aguardando autorização"],[cnt("autorizado"),"com autorização, sem ordem"],[cnt("fila")+cnt("carregando"),"com ordem / carregando"],[cnt("carregado")+cnt("aguardlib"),"carregados / esperando liberação"],[lib.length,"liberados hoje"]];
   $("kpis").innerHTML=k.map(([n,l,b])=>`<div class="kpi${b?" big":""}"><b>${n}</b><span>${l}</span></div>`).join("");
-  const F=[["","Todos",act.length],["semordem","Sem ordem",cnt("semordem")],...FLOW.slice(0,4).map(([s,t])=>[s,t,cnt(s)])];
+  const F=[["","Todos",act.length],["semordem","Aguardando autorização",cnt("semordem")],...FLOW.slice(0,5).map(([s,t])=>[s,t,cnt(s)])];
   $("chips").innerHTML=F.map(([s,t,n])=>`<button class="chip" data-f="${s}" aria-pressed="${pFilter===s}">${t} <b>${n}</b></button>`).join("");
   const rows=act.map((o,i)=>({o,seq:i+1})).filter(r=>!pFilter||r.o.status===pFilter);
   if(!rows.length){$("lanes").innerHTML='<div class="empty">'+(act.length?"Nenhum caminhão nesta situação.":"Nenhum caminhão no pátio. Registre a chegada acima.")+"</div>"}
   else $("lanes").innerHTML='<div class="scroll"><table class="stack fila"><thead><tr><th>Seq.</th><th>Placa</th><th>Caminhão</th><th>Motorista</th><th>Ordem</th><th>No pátio há</th><th>Situação</th></tr></thead><tbody>'+rows.map(({o,seq})=>{
     const st=o.status,w=now-tsOf(o),stT=Date.parse(o[TSK[st]]||"")||tsOf(o);
-    const late=(st==="semordem"||st==="fila")&&w>2*3600e3||st==="aguardlib"&&now-stT>3600e3;
+    const late=(st==="semordem"||st==="autorizado"||st==="fila")&&w>2*3600e3||st==="aguardlib"&&now-stT>3600e3;
     const seg=FLOW.map(([s,t])=>`<button class="sg s-${s}" data-a="st" data-st="${s}" data-id="${esc(o._id)}" aria-pressed="${st===s}">${t}</button>`).join("");
     const ct=(cts.find(c=>c._id===o.contrato)||{}).cod;
     return `<tr class="r-${st}${late?" late":""}"><td class="seq">${seq}º</td><td><b class="plq">${esc(o.placa||"—")}</b></td><td>${esc(o.tipo||"—")}</td><td>${esc(o.motorista||"—")}</td>
-      <td>${o.numero?`<button class="lnkb" data-a="abrir" data-id="${esc(o._id)}" title="Abrir a ordem">Nº ${esc(o.numero)}</button>`+(ct?"<br><small>"+esc(ct)+"</small>":""):`<span class="tag">Sem ordem</span><br><button class="btn sm p em" data-a="ordem" data-st="fila" data-id="${esc(o._id)}">Emitir ordem</button><br><button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover do pátio</button>`}</td>
+      <td>${o.numero?`<button class="lnkb" data-a="abrir" data-id="${esc(o._id)}" title="Abrir a ordem">Nº ${esc(o.numero)}</button>`+(o.autEmb?"<br><small>Aut. "+esc(o.autEmb)+"</small>":"")+(ct?"<br><small>"+esc(ct)+"</small>":"")
+        :st==="autorizado"?`<span class="tag ok">Aut. ${esc(o.autEmb||"")}</span>${ct?"<br><small>"+esc(ct)+"</small>":""}<br><button class="btn sm p em" data-a="ordem" data-st="fila" data-id="${esc(o._id)}">Emitir ordem</button><br><button class="lnkb" data-a="aut" data-id="${esc(o._id)}" style="font-size:13px">Editar autorização</button> · <button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover</button>`
+        :`<span class="tag">Aguardando autorização</span><br><button class="btn sm p em" data-a="aut" data-id="${esc(o._id)}">Registrar autorização</button><br><button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover do pátio</button>`}</td>
       <td class="wait">${dur(w)}<br><small>chegou ${esc(o.chegada||"")}</small>${st!=="semordem"&&st!=="fila"?"<br><small>"+esc(ST[st].toLowerCase())+" há "+dur(now-stT)+"</small>":""}</td>
       <td><div class="seg">${seg}</div></td>
 </tr>`}).join("")+"</tbody></table></div>";
@@ -973,11 +986,35 @@ async function patioClick(e){
   const a=b.dataset.a;
   if(a==="abrir"){editing=o.numero;pendingTemp=null;fillForm(o);show("nova")}
   else if(a==="pdf")pdf(o);
-  else if(a==="st"&&o.status==="semordem"){const{_id,status,...rest}=o;editing=null;fillForm({...rest,status:b.dataset.st,data:o.data||hoje()});pendingTemp=_id;$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?";show("nova");toast("Este caminhão ainda não tem ordem: complete e salve para emitir.")}
+  else if(a==="aut"||(a==="st"&&b.dataset.st==="autorizado")){openAut(o)}
+  else if(a==="st"&&o.status==="semordem"){openAut(o);toast("Registre primeiro a autorização de embarque deste caminhão.")}
+  else if(a==="st"&&!o.numero){emitir(o,b.dataset.st)}
   else if(a==="st"){if(o.status===b.dataset.st)return;if(b.dataset.st==="liberado"&&o.liquido==null)setTimeout(()=>toast("Atenção: "+(o.placa||"caminhão")+" liberado sem pesagem (bruto/tara)."),1200);b.disabled=true;await move(o,b.dataset.st)}
-  else if(a==="ordem"){const{_id,status,...rest}=o;editing=null;fillForm({...rest,status:"fila",data:o.data||hoje()});pendingTemp=_id;$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?";show("nova");toast("Complete a ordem e salve para tirar o caminhão de \"Aguardando ordem\".")}
+  else if(a==="ordem"){emitir(o,"fila")}
   else if(a==="rm"){$("dlgMsg").textContent="Tirar o caminhão "+(o.placa||"")+" do pátio?";$("dlg").dataset.id=o._id;$("dlg").showModal()}
 }
+function emitir(o,st){const{_id,status,...rest}=o;editing=null;fillForm({...rest,status:st,data:o.data||hoje()});pendingTemp=_id;pendingPrev=o;$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?";show("nova");toast("Confira a ordem e salve para emitir o número.")}
+function openAut(o){
+  autO=o;
+  $("a_t").textContent="Autorização de embarque — "+(o.placa||"caminhão");
+  $("a_num").value=o.autEmb||"";$("a_qtd").value=o.qtdAut!=null?fmt(o.qtdAut):"";$("a_obs").value=o.autObs||"";
+  $("a_ct").innerHTML='<option value="">Sem contrato</option>'+cts.filter(c=>c.status!=="encerrado"||c._id===o.contrato).map(c=>`<option value="${esc(c._id)}">${esc(c.cod+" — "+c.empresa+" — "+c.material)}</option>`).join("");
+  $("a_ct").value=o.contrato||"";
+  $("adlg").showModal();$("a_num").focus();
+}
+$("a_cancel").onclick=()=>$("adlg").close();
+$("a_qtd").addEventListener("blur",e=>{const n=parseKg(e.target.value);if(n!=null)e.target.value=fmt(n)});
+$("af").addEventListener("submit",async e=>{
+  e.preventDefault();const o=autO;if(!o)return;
+  if(!db||readOnly){toast("Sem permissão para alterar o pátio.");return}
+  const num=$("a_num").value.trim();if(!num){toast("Informe o número da autorização.");return}
+  const c=cts.find(x=>x._id===$("a_ct").value),now=new Date().toISOString();
+  const body={autEmb:num,qtdAut:parseKg($("a_qtd").value),autObs:$("a_obs").value.trim(),contrato:c?c._id:"",contratoCod:c?c.cod:""};
+  if(o.status==="semordem"){body.status="autorizado";body.autorizadoTs=now}
+  if(c){if(!o.destino)body.destino=c.destino||c.empresa;if(!o.origem&&c.origem)body.origem=c.origem;if(!o.local&&c.local)body.local=c.local;if(c.material)body.p1=c.material;if(c.variedade&&!o.v1)body.v1=c.variedade}
+  try{await db.collection("ordens").doc(o._id).update(body);$("adlg").close();toast("Autorização "+num+" registrada para "+(o.placa||"o caminhão")+".")}
+  catch(err){toast(err&&err.code==="invalid_argument"?"Seu acesso é só de leitura.":"Não foi possível salvar.")}
+});
 $("lanes").addEventListener("click",patioClick);$("saidos").addEventListener("click",patioClick);
 $("fc").addEventListener("submit",async e=>{
   e.preventDefault();
@@ -1124,7 +1161,7 @@ $("u_lista").addEventListener("click",async e=>{
   db.collection("motoristas").onSnapshot(s=>{mots=s.docs.filter(d=>d.data()?.nome).map(d=>({...d.data(),_id:d.id}));renderCadLists();if(!$("v-cad").hidden)renderCad()},()=>{});
   db.collection("ordens").onSnapshot(s=>{
     if(!s.metadata.fromCache){clearTimeout(timer)}
-    all=s.docs.map(d=>({...(d.data()||{}),_id:d.id})).filter(o=>o.numero||o.status==="semordem");
+    all=s.docs.map(d=>({...(d.data()||{}),_id:d.id})).filter(o=>o.numero||o.status==="semordem"||o.status==="autorizado");
     orders=all.filter(o=>o.numero).sort((a,b)=>b.numero.localeCompare(a.numero));
     renderPlacas();showCtSaldo();
     if(!$("v-patio").hidden)renderPatio();

@@ -483,10 +483,8 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
 </form></dialog>
 <dialog id="adlg"><form id="af" class="pform" style="margin:0;min-width:min(420px,80vw)" autocomplete="off">
   <h2 id="a_t" style="grid-column:1/-1;margin:0 0 4px;font-size:19px">Autorização de embarque</h2>
-  <label style="grid-column:1/-1">Nº da autorização de embarque *<input id="a_num" required></label>
-  <label style="grid-column:1/-1">Contrato<select id="a_ct"></select></label>
-  <label>Quantidade autorizada (kg)<input id="a_qtd" inputmode="numeric"></label>
-  <label>Observação<input id="a_obs"></label>
+  <label style="grid-column:1/-1">Contrato *<select id="a_ct" required style="font-size:16px;min-height:46px"></select></label>
+  <p id="a_info" style="grid-column:1/-1;margin:0;font-size:14px;color:var(--muted);min-height:20px"></p>
   <div class="full" style="justify-content:flex-end"><button class="btn sm" type="button" id="a_cancel">Cancelar</button><button class="btn sm p" type="submit">Salvar autorização</button></div>
 </form></dialog>
 <dialog id="udlg"><form id="uf" method="dialog" class="pform" style="margin:0;min-width:min(420px,80vw)">
@@ -851,8 +849,8 @@ function renderPatio(){
     const ct=(cts.find(c=>c._id===o.contrato)||{}).cod;
     return `<tr class="r-${st}${late?" late":""}"><td class="seq">${seq}º${o.fila!=null&&o.filaMovidaEm?`<br><small class="mv" title="${esc((o.filaMotivo?"Motivo: "+o.filaMotivo+" · ":"")+"alterada em "+new Date(o.filaMovidaEm).toLocaleString("pt-BR"))}">posição alterada</small>`:""}${readOnly?"":`<br><button class="lnkb mvb" data-a="mover" data-id="${esc(o._id)}">Mudar posição</button>`}</td><td><b class="plq">${esc(o.placa||"—")}</b></td><td>${esc(o.tipo||"—")}</td><td>${esc(o.motorista||"—")}</td>
       <td>${o.numero?`<button class="lnkb" data-a="abrir" data-id="${esc(o._id)}" title="Abrir a ordem">Nº ${esc(o.numero)}</button>`+(o.autEmb?"<br><small>Aut. "+esc(o.autEmb)+"</small>":"")+(ct?"<br><small>"+esc(ct)+"</small>":"")
-        :st==="autorizado"?`<span class="tag ok">Aut. ${esc(o.autEmb||"")}</span>${ct?"<br><small>"+esc(ct)+"</small>":""}<br><button class="btn sm p em" data-a="ordem" data-st="fila" data-id="${esc(o._id)}">Emitir ordem</button><br><button class="lnkb" data-a="aut" data-id="${esc(o._id)}" style="font-size:13px">Editar autorização</button> · <button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover</button>`
-        :`<span class="tag">Aguardando autorização</span><br><button class="btn sm p em" data-a="aut" data-id="${esc(o._id)}">Registrar autorização</button><br><button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover do pátio</button>`}</td>
+        :st==="autorizado"?`<span class="tag ok">Autorizado${ct?" · "+esc(ct):""}</span><br><button class="btn sm p em" data-a="ordem" data-st="fila" data-id="${esc(o._id)}">Emitir ordem</button><br><button class="lnkb" data-a="aut" data-id="${esc(o._id)}" style="font-size:13px">Trocar contrato</button> · <button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover</button>`
+        :`<span class="tag">Aguardando autorização</span><br><button class="btn sm p em" data-a="aut" data-id="${esc(o._id)}">Autorização de embarque</button><br><button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover do pátio</button>`}</td>
       <td class="wait">${dur(w)}<br><small>chegou ${esc(o.chegada||"")}</small>${st!=="semordem"&&st!=="fila"?"<br><small>"+esc(ST[st].toLowerCase())+" há "+dur(now-stT)+"</small>":""}</td>
       <td class="sitc">${seg}</td>
 </tr>`}).join("")+"</tbody></table></div>";
@@ -926,22 +924,24 @@ function emitir(o,st){const{_id,status,...rest}=o;editing=null;fillForm({...rest
 function openAut(o){
   autO=o;
   $("a_t").textContent="Autorização de embarque — "+(o.placa||"caminhão");
-  $("a_num").value=o.autEmb||"";$("a_qtd").value=o.qtdAut!=null?fmt(o.qtdAut):"";$("a_obs").value=o.autObs||"";
-  $("a_ct").innerHTML='<option value="">Sem contrato</option>'+cts.filter(c=>c.status!=="encerrado"||c._id===o.contrato).map(c=>`<option value="${esc(c._id)}">${esc(c.cod+" — "+c.empresa+" — "+c.material)}</option>`).join("");
-  $("a_ct").value=o.contrato||"";
-  $("adlg").showModal();$("a_num").focus();
+  const lista=cts.filter(c=>c.status!=="encerrado"||c._id===o.contrato);
+  $("a_ct").innerHTML='<option value="">Escolha o contrato…</option>'+lista.map(c=>`<option value="${esc(c._id)}">${esc(c.cod+" — "+c.empresa+" — "+c.material)}</option>`).join("");
+  $("a_ct").value=o.contrato||"";aInfo();
+  if(!lista.length)$("a_info").textContent="Nenhum contrato aberto. Crie o contrato na aba Contratos primeiro.";
+  $("adlg").showModal();$("a_ct").focus();
 }
 $("a_cancel").onclick=()=>$("adlg").close();
-$("a_qtd").addEventListener("blur",e=>{const n=parseKg(e.target.value);if(n!=null)e.target.value=fmt(n)});
+function aInfo(){const c=cts.find(x=>x._id===$("a_ct").value);$("a_info").textContent=c?`Destino: ${c.destino||c.empresa}${c.origem?" · Origem: "+c.origem:""} · Saldo: ${ton(c.qtd-carregado(c._id))}`:""}
+$("a_ct").addEventListener("change",aInfo);
 $("af").addEventListener("submit",async e=>{
   e.preventDefault();const o=autO;if(!o)return;
   if(!db||readOnly){toast("Sem permissão para alterar o pátio.");return}
-  const num=$("a_num").value.trim();if(!num){toast("Informe o número da autorização.");return}
   const c=cts.find(x=>x._id===$("a_ct").value),now=new Date().toISOString();
-  const body={autEmb:num,qtdAut:parseKg($("a_qtd").value),autObs:$("a_obs").value.trim(),contrato:c?c._id:"",contratoCod:c?c.cod:""};
+  if(!c){toast("Escolha o contrato.");return}
+  const body={contrato:c._id,contratoCod:c.cod};
   if(o.status==="semordem"){body.status="autorizado";body.autorizadoTs=now}
   if(c){if(!o.destino)body.destino=c.destino||c.empresa;if(!o.origem&&c.origem)body.origem=c.origem;if(!o.local&&c.local)body.local=c.local;if(c.material)body.p1=c.material;if(c.variedade&&!o.v1)body.v1=c.variedade}
-  try{await db.collection("ordens").doc(o._id).update(body);$("adlg").close();toast("Autorização "+num+" registrada para "+(o.placa||"o caminhão")+".")}
+  try{await db.collection("ordens").doc(o._id).update(body);$("adlg").close();toast((o.placa||"Caminhão")+" autorizado no contrato "+c.cod+".")}
   catch(err){toast(err&&err.code==="invalid_argument"?"Seu acesso é só de leitura.":"Não foi possível salvar.")}
 });
 $("lanes").addEventListener("click",patioClick);

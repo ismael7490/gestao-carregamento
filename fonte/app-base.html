@@ -79,6 +79,56 @@ td.acts{white-space:nowrap;text-align:right}
 dialog{border:0;border-radius:10px;padding:20px;max-width:380px;background:var(--card);color:var(--ink)}
 dialog::backdrop{background:rgba(0,0,0,.4)}
 [hidden]{display:none!important}
+/* Painel */
+:root{--viz:light-dark(#2a7a3e,#5fae72);--viz-lt:light-dark(#a9d4b3,#2f5a39);--viz-track:light-dark(#e3efe5,#243328);--grid:light-dark(#e7e7e7,#303030);--base:light-dark(#c2c2c2,#474747);--good:light-dark(#006c10,#53c556);--crit:#dc3c3d}
+.pn-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.pn-head h2{margin:0;font-size:clamp(22px,3vw,28px)}.pn-head span{font-size:13px;color:var(--muted)}
+.pn-top{display:grid;grid-template-columns:1.4fr repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.pn-hero,.pn-tile{border-radius:12px;padding:16px 18px;background:var(--card)}
+.pn-hero{background:var(--green);color:#fff}
+.pn-hero span,.pn-tile span{display:block;font-size:14px;font-weight:600;opacity:.85}
+.pn-hero b{display:block;font-size:clamp(48px,7vw,64px);line-height:1;margin:6px 0 6px;font-weight:800}
+.pn-tile b{display:block;font-size:clamp(26px,3.2vw,34px);line-height:1.1;margin:8px 0 4px;font-weight:800;white-space:nowrap}
+.pn-hero small{font-size:13px;opacity:.9}.pn-tile small{font-size:13px;color:var(--muted)}
+.pn-tile small .up{color:var(--good);font-weight:700}.pn-tile small .dn{color:var(--crit);font-weight:700}
+.pn-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}
+.pn-card{background:var(--card);border-radius:12px;padding:16px 18px;margin-bottom:14px}.pn-grid .pn-card{margin-bottom:0}
+.pn-card h3{margin:0;font-size:17px}.pn-sub{margin:2px 0 14px;font-size:13px;color:var(--muted)}
+.pn-row{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr) auto;align-items:center;gap:10px;min-height:34px;cursor:default}
+.pn-row .lb{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pn-row .tr{display:block;height:16px;position:relative}
+.pn-row .br{display:block;height:16px;border-radius:0 4px 4px 0;background:var(--viz-lt);min-width:2px}
+.pn-row .br.hi{background:var(--viz)}
+.pn-row .vl{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;min-width:52px}
+.pn-row .nt{display:block;font-size:12px;font-weight:600;color:var(--muted)}
+.pn-row:hover .br{filter:brightness(.93)}
+.pn-cols{position:relative;height:230px;margin:6px 0 4px 40px}
+.pn-cols .gl{position:absolute;left:0;right:0;border-top:1px solid var(--grid)}.pn-cols .gl.b0{border-top-color:var(--base)}
+.pn-cols .gl i{position:absolute;right:calc(100% + 6px);top:-8px;font-size:12px;font-style:normal;color:var(--muted);font-variant-numeric:tabular-nums}
+.pn-cols .cs{position:absolute;inset:0;display:flex;align-items:flex-end;gap:2px}
+.pn-cols .c{flex:1 1 0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;cursor:default}
+.pn-cols .c .k{width:min(24px,70%);background:var(--viz-lt);border-radius:4px 4px 0 0;min-height:0}
+.pn-cols .c.hi .k{background:var(--viz)}
+.pn-cols .c:hover .k{filter:brightness(.92)}
+.pn-cols .c .cap{position:absolute;font-size:12px;font-weight:700;white-space:nowrap;transform:translateY(-18px)}
+.pn-cols .avg{position:absolute;left:0;right:0;border-top:1.5px solid var(--ink);opacity:.55}
+.pn-cols .avg i{position:absolute;left:4px;top:-18px;font-size:12px;font-style:normal;font-weight:600;background:var(--card);padding:0 4px}
+.pn-x{display:flex;gap:2px;margin-left:40px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pn-x span{flex:1 1 0;text-align:center;white-space:nowrap;overflow:visible}
+.pn-ct{padding:10px 0;border-bottom:1px solid var(--grid)}.pn-ct:last-child{border-bottom:0}
+.pn-ct .t{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:14px}
+.pn-ct .t b{font-weight:700}.pn-ct .t span{color:var(--muted)}
+.pn-ct .m{height:10px;border-radius:5px;background:var(--viz-track);margin:8px 0 6px;overflow:hidden}
+.pn-ct .m i{display:block;height:100%;border-radius:5px;background:var(--viz)}.pn-ct .m i.over{background:var(--crit)}
+.pn-ct .s{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.pn-ct .s b{color:var(--ink);font-size:15px}
+.pn-ct .warn{color:var(--crit);font-weight:700}
+.pn-empty{font-size:14px;color:var(--muted);padding:18px 0}
+.pn-tab summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--green);padding:8px 0;min-height:36px}
+.pn-tab table{font-size:13px}
+.pn-tip{position:fixed;z-index:70;pointer-events:none;background:#1b221c;color:#fff;font-size:13px;line-height:1.4;padding:8px 10px;border-radius:8px;max-width:240px;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+@media(max-width:1000px){.pn-top{grid-template-columns:repeat(2,minmax(0,1fr))}.pn-hero{grid-column:1/-1}}
+@media(max-width:800px){.pn-grid{grid-template-columns:1fr}.pn-row{grid-template-columns:minmax(0,150px) minmax(0,1fr) auto}.pn-row .lb{font-size:13px;white-space:normal;line-height:1.25}.pn-cols .avg i{display:none}.pn-cols .c .cap{display:none}.pn-cols .c.last .cap,.pn-cols .c.max .cap{display:block}}
+
 body.locked nav,body.locked main,body.locked #bar{display:none!important}
 body:not(.locked) .gate{display:none}
 .gate{padding:clamp(24px,6vw,64px) max(4vw,14px);display:grid;place-items:center}
@@ -91,7 +141,7 @@ body:not(.locked) .gate{display:none}
 .badge{background:#c62828;color:#fff;border-radius:10px;padding:1px 7px;font-size:12px;margin-left:4px}
 .ustat{display:inline-block;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap}
 .ustat.pendente{background:#fbe7c6;color:#7a4b00}.ustat.ativo{background:#dcefe0;color:#1e5a2c}.ustat.bloqueado{background:#f6d4d4;color:#8a1c1c}
-body.ro #bar,body.ro #fc,body.ro #fct,body.ro #fv,body.ro #fm,body.ro #cf button,body.ro .btn.del,body.ro [data-a=ordem],body.ro #ct_det [data-a=edit],body.ro #ct_det [data-a=enc],body.ro #lanes .em,body.ro #lanes [data-a=aut],body.ro #lanes .rm,body.ro #saidos [data-a=st]{display:none!important}
+body.ro #bar,body.ro #fc,body.ro #fct,body.ro #fv,body.ro #fm,body.ro #cf button,body.ro .btn.del,body.ro [data-a=ordem],body.ro #ct_det [data-a=edit],body.ro #ct_det [data-a=enc],body.ro #lanes .em,body.ro #lanes .mvb,body.ro #lanes [data-a=aut],body.ro #lanes .rm,body.ro #saidos [data-a=st]{display:none!important}
 .sit{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-weight:600;font-size:14px}
 select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radius:8px;border:1.5px solid var(--muted);background:var(--card);color:var(--ink)}
 .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
@@ -117,7 +167,10 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
 .stsel.s-semordem{background-color:#b7791f}.stsel.s-autorizado{background-color:#5f7d1a}.stsel.s-fila{background-color:#2f5d3a}.stsel.s-carregando{background-color:#1d3a8f}.stsel.s-carregado{background-color:#0e7c86}.stsel.s-aguardlib{background-color:#7b3fa0}.stsel.s-liberado{background-color:#444}
 .stsel:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .stsel:disabled{opacity:.85;cursor:default}
-.fila .seq{font-size:18px;font-weight:800;color:var(--muted)}
+.fila .seq{font-size:18px;font-weight:800;color:var(--muted);white-space:nowrap}
+.fila .seq .mv{display:inline-block;font-size:11px;font-weight:700;color:#7a4b00;background:#fbe7c6;border-radius:4px;padding:1px 6px;margin-top:2px}
+.fila .seq .mvb{font-size:13px;font-weight:600;padding:2px 0;min-height:30px;text-decoration:none;color:var(--green)}
+.fila .seq .mvb:hover{text-decoration:underline}
 .fila .plq{font-size:18px;letter-spacing:.5px;white-space:nowrap}
 .fila small{color:var(--muted);font-size:13px}
 .fila .wait{white-space:nowrap;font-weight:700;font-variant-numeric:tabular-nums}
@@ -215,6 +268,7 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
   <p id="sub">Autorização de carregamento com pesagem — numeração e histórico compartilhados pela equipe</p>
   <nav>
     <button data-v="patio">Pátio</button>
+    <button data-v="painel" hidden>Painel</button>
     <button data-v="nova" aria-current="true">Nova ordem</button>
     <button data-v="ct">Contratos</button>
     <button data-v="hist">Histórico</button>
@@ -243,6 +297,27 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
     <div class="chips" id="chips" role="group" aria-label="Filtrar pela situação"></div>
     <div id="lanes"></div>
     <details class="saidos"><summary id="saiSum">Liberados hoje</summary><div id="saidos"></div></details>
+  </section>
+
+  <section id="v-painel" hidden>
+    <div class="pn-head"><h2>Painel da expedição</h2><span id="pn_upd"></span></div>
+    <div class="pn-top">
+      <div class="pn-hero"><span>Para carregar agora</span><b id="pn_fila">0</b><small id="pn_fila_sub"></small></div>
+      <div class="pn-tile"><span>Carregado hoje</span><b id="pn_hoje">0 t</b><small id="pn_hoje_d"></small></div>
+      <div class="pn-tile"><span>Liberados hoje</span><b id="pn_lib">0</b><small id="pn_lib_d"></small></div>
+      <div class="pn-tile"><span>Tempo médio no pátio</span><b id="pn_tmp">—</b><small>da chegada à liberação, últimos 7 dias</small></div>
+      <div class="pn-tile"><span>Saldo dos contratos</span><b id="pn_saldo">0 t</b><small id="pn_saldo_d"></small></div>
+    </div>
+    <div class="pn-grid">
+      <div class="pn-card"><h3>Onde está a fila agora</h3><p class="pn-sub">Caminhões no pátio por etapa</p><div id="pn_etapas"></div></div>
+      <div class="pn-card"><h3>Onde o caminhão espera mais</h3><p class="pn-sub">Tempo médio em cada etapa, últimos 7 dias</p><div id="pn_gargalo"></div></div>
+    </div>
+    <div class="pn-card"><h3>Toneladas carregadas por dia</h3><p class="pn-sub" id="pn_dias_sub">Últimos 30 dias</p><div class="pn-cols" id="pn_dias" role="img"></div>
+      <details class="pn-tab"><summary>Ver em tabela</summary><div id="pn_dias_tab"></div></details></div>
+    <div class="pn-grid">
+      <div class="pn-card"><h3>Contratos abertos</h3><p class="pn-sub">Carregado do total contratado e saldo</p><div id="pn_ct"></div></div>
+      <div class="pn-card"><h3>Carregado no mês por cliente</h3><p class="pn-sub" id="pn_cli_sub"></p><div id="pn_cli"></div></div>
+    </div>
   </section>
 
   <section id="v-nova">
@@ -397,6 +472,15 @@ select{font:16px Archivo,sans-serif;min-height:40px;padding:6px 10px;border-radi
 </div>
 
 <div class="toast" id="toast" role="status"></div>
+<div class="pn-tip" id="pn_tip" role="tooltip" hidden></div>
+<dialog id="mdlg"><form id="mf" class="pform" style="margin:0;min-width:min(400px,80vw)" autocomplete="off">
+  <h2 id="m_t" style="grid-column:1/-1;margin:0;font-size:19px">Mudar posição</h2>
+  <p id="m_atual" style="grid-column:1/-1;margin:0 0 4px;color:var(--muted);font-size:14px"></p>
+  <label style="grid-column:1/-1">Nova posição na fila<input id="m_pos" type="number" min="1" inputmode="numeric" required style="font-size:22px;font-weight:700;max-width:140px"></label>
+  <div class="full"><button class="btn sm" type="button" id="m_first">Passar para 1º</button><button class="btn sm" type="button" id="m_last">Mandar para o fim</button></div>
+  <label style="grid-column:1/-1">Motivo (opcional)<input id="m_mot" placeholder="Ex.: documentação pendente, pedido do cliente"></label>
+  <div class="full" style="justify-content:flex-end"><button class="btn sm" type="button" id="m_cancel">Cancelar</button><button class="btn sm p" type="submit">Salvar posição</button></div>
+</form></dialog>
 <dialog id="adlg"><form id="af" class="pform" style="margin:0;min-width:min(420px,80vw)" autocomplete="off">
   <h2 id="a_t" style="grid-column:1/-1;margin:0 0 4px;font-size:19px">Autorização de embarque</h2>
   <label style="grid-column:1/-1">Nº da autorização de embarque *<input id="a_num" required></label>
@@ -750,7 +834,7 @@ const FLOW=[["autorizado","Autorização de embarque"],["fila","Com ordem"],["ca
 let pFilter="";
 function renderPatio(){
   const now=Date.now();
-  const act=all.filter(o=>o.status&&o.status!=="liberado"&&ST[o.status]).sort((a,b)=>tsOf(a)-tsOf(b));
+  const act=filaOrdenada();
   const cnt=s=>act.filter(o=>o.status===s).length;
   const lib=orders.filter(o=>o.status==="liberado"&&isToday(o.liberadoTs)).sort((a,b)=>Date.parse(b.liberadoTs)-Date.parse(a.liberadoTs));
   const k=[[cnt("semordem")+cnt("autorizado")+cnt("fila")+cnt("carregando"),"para carregar",1],[cnt("semordem"),"aguardando autorização"],[cnt("autorizado"),"com autorização, sem ordem"],[cnt("fila")+cnt("carregando"),"com ordem / carregando"],[cnt("carregado")+cnt("aguardlib"),"carregados / esperando liberação"],[lib.length,"liberados hoje"]];
@@ -765,7 +849,7 @@ function renderPatio(){
     const opts=(st==="semordem"?[["semordem","Aguardando autorização"]]:[]).concat(FLOW);
     const seg=`<select class="stsel s-${st}" data-id="${esc(o._id)}" aria-label="Situação de ${esc(o.placa||"caminhão")}"${readOnly?" disabled":""}>${opts.map(([s,t])=>`<option value="${s}"${st===s?" selected":""}>${t}</option>`).join("")}</select>`;
     const ct=(cts.find(c=>c._id===o.contrato)||{}).cod;
-    return `<tr class="r-${st}${late?" late":""}"><td class="seq">${seq}º</td><td><b class="plq">${esc(o.placa||"—")}</b></td><td>${esc(o.tipo||"—")}</td><td>${esc(o.motorista||"—")}</td>
+    return `<tr class="r-${st}${late?" late":""}"><td class="seq">${seq}º${o.fila!=null&&o.filaMovidaEm?`<br><small class="mv" title="${esc((o.filaMotivo?"Motivo: "+o.filaMotivo+" · ":"")+"alterada em "+new Date(o.filaMovidaEm).toLocaleString("pt-BR"))}">posição alterada</small>`:""}${readOnly?"":`<br><button class="lnkb mvb" data-a="mover" data-id="${esc(o._id)}">Mudar posição</button>`}</td><td><b class="plq">${esc(o.placa||"—")}</b></td><td>${esc(o.tipo||"—")}</td><td>${esc(o.motorista||"—")}</td>
       <td>${o.numero?`<button class="lnkb" data-a="abrir" data-id="${esc(o._id)}" title="Abrir a ordem">Nº ${esc(o.numero)}</button>`+(o.autEmb?"<br><small>Aut. "+esc(o.autEmb)+"</small>":"")+(ct?"<br><small>"+esc(ct)+"</small>":"")
         :st==="autorizado"?`<span class="tag ok">Aut. ${esc(o.autEmb||"")}</span>${ct?"<br><small>"+esc(ct)+"</small>":""}<br><button class="btn sm p em" data-a="ordem" data-st="fila" data-id="${esc(o._id)}">Emitir ordem</button><br><button class="lnkb" data-a="aut" data-id="${esc(o._id)}" style="font-size:13px">Editar autorização</button> · <button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover</button>`
         :`<span class="tag">Aguardando autorização</span><br><button class="btn sm p em" data-a="aut" data-id="${esc(o._id)}">Registrar autorização</button><br><button class="lnkb rm" data-a="rm" data-id="${esc(o._id)}">Remover do pátio</button>`}</td>
@@ -787,6 +871,7 @@ async function patioClick(e){
   const b=e.target.closest("button[data-a]");if(!b)return;
   const o=all.find(x=>x._id===b.dataset.id);if(!o)return;
   const a=b.dataset.a;
+  if(a==="mover"){openMover(o);return}
   if(a==="abrir"){editing=o.numero;pendingTemp=null;fillForm(o);show("nova")}
   else if(a==="pdf")pdf(o);
   else if(a==="aut"||(a==="st"&&b.dataset.st==="autorizado")){openAut(o)}
@@ -796,6 +881,47 @@ async function patioClick(e){
   else if(a==="ordem"){emitir(o,"fila")}
   else if(a==="rm"){$("dlgMsg").textContent="Tirar o caminhão "+(o.placa||"")+" do pátio?";$("dlg").dataset.id=o._id;$("dlg").showModal()}
 }
+function filaOrdenada(){
+  return all.filter(o=>o.status&&o.status!=="liberado"&&ST[o.status]).sort((a,b)=>{
+    const fa=a.fila!=null,fb=b.fila!=null;
+    if(fa&&fb)return a.fila-b.fila||tsOf(a)-tsOf(b);
+    if(fa!==fb)return fa?-1:1;
+    return tsOf(a)-tsOf(b);
+  });
+}
+let movO=null;
+function openMover(o){
+  const lista=filaOrdenada(),pos=lista.findIndex(x=>x._id===o._id)+1;movO=o;
+  $("m_t").textContent="Mudar posição — "+(o.placa||"caminhão");
+  $("m_atual").textContent=`Hoje ele é o ${pos}º de ${lista.length} caminhões no pátio.`;
+  $("m_pos").max=lista.length;$("m_pos").value=pos;$("m_mot").value="";
+  $("mdlg").showModal();$("m_pos").select();
+}
+$("m_cancel").onclick=()=>$("mdlg").close();
+$("m_first").onclick=()=>{$("m_pos").value=1};
+$("m_last").onclick=()=>{$("m_pos").value=$("m_pos").max};
+$("mf").addEventListener("submit",async e=>{
+  e.preventDefault();const o=movO;if(!o)return;
+  if(!db||readOnly){toast("Sem permissão para alterar a fila.");return}
+  const lista=filaOrdenada(),de=lista.findIndex(x=>x._id===o._id);if(de<0){$("mdlg").close();return}
+  let para=Math.round(+$("m_pos").value)-1;if(isNaN(para))return;para=Math.max(0,Math.min(lista.length-1,para));
+  if(para===de){$("mdlg").close();return}
+  const nova=lista.slice();nova.splice(de,1);nova.splice(para,0,o);
+  const now=new Date().toISOString(),mot=$("m_mot").value.trim();
+  const btn=e.submitter;if(btn)btn.disabled=true;
+  try{
+    // grava a nova posição de quem mudou de lugar (e de quem ainda não tinha posição)
+    for(let i=0;i<nova.length;i++){
+      const x=nova[i],val=(i+1)*10;
+      if(x.fila===val&&x._id!==o._id)continue;
+      const body={fila:val};
+      if(x._id===o._id){body.filaMovidaEm=now;body.filaMotivo=mot;body.filaDe=de+1;body.filaPara=para+1}
+      await db.collection("ordens").doc(x._id).update(body);
+    }
+    $("mdlg").close();toast(`${o.placa||"Caminhão"}: passou de ${de+1}º para ${para+1}º na fila.`);
+  }catch(err){toast(err&&err.code==="invalid_argument"?"Seu acesso é só de leitura.":"Não foi possível mudar a posição. Tente de novo.")}
+  finally{if(btn)btn.disabled=false}
+});
 function emitir(o,st){const{_id,status,...rest}=o;editing=null;fillForm({...rest,status:st,data:o.data||hoje()});pendingTemp=_id;pendingPrev=o;$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?";show("nova");toast("Confira a ordem e salve para emitir o número.")}
 function openAut(o){
   autO=o;
@@ -838,12 +964,90 @@ $("fc").addEventListener("submit",async e=>{
 });
 setInterval(()=>{if(!$("v-patio").hidden)renderPatio()},30000);
 
+/* ---------- Painel ---------- */
+const STAGES=[["semordem","Aguardando autorização"],["autorizado","Com autorização"],["fila","Com ordem"],["carregando","Carregando"],["carregado","Carregado"],["aguardlib","Esperando liberação"]];
+const dkey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const libDay=o=>o.liberadoTs?dkey(new Date(o.liberadoTs)):(o.data||"");
+const ton=kg=>fmt(kg/1000,1)+" t";
+const ms=(a,b)=>{const x=Date.parse(a||""),y=Date.parse(b||"");return isNaN(x)||isNaN(y)||y<x?null:y-x};
+function rowsHTML(items,unit){
+  const max=Math.max(1,...items.map(i=>i.v));const hiV=Math.max(...items.map(i=>i.v));const hiI=items.findIndex(i=>i.v===hiV);
+  return items.map((i,ix)=>`<div class="pn-row" data-tip="${esc(i.tip)}"><span class="lb">${esc(i.l)}</span><span class="tr"><span class="br${i.v>0&&ix===hiI&&i.hl?" hi":""}" style="width:${(i.v/max*100).toFixed(1)}%;${i.v?"":"min-width:0"}"></span></span><span class="vl">${esc(i.txt)}${i.v>0&&ix===hiI&&i.hl?`<span class="nt">${esc(i.hl)}</span>`:""}</span></div>`).join("");
+}
+function niceMax(v){if(v<=0)return 10;const p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+function renderPainel(){
+  if($("v-painel").hidden)return;
+  const now=Date.now(),today=dkey(new Date());
+  const act=all.filter(o=>o.status&&o.status!=="liberado"&&ST[o.status]);
+  const paraCarregar=act.filter(o=>["semordem","autorizado","fila","carregando"].includes(o.status));
+  // destaque
+  $("pn_fila").textContent=paraCarregar.length;
+  const oldest=[...paraCarregar].sort((a,b)=>tsOf(a)-tsOf(b))[0];
+  $("pn_fila_sub").textContent=paraCarregar.length?`${act.length} no pátio · o mais antigo (${oldest.placa||"sem placa"}) espera há ${dur(now-tsOf(oldest))}`:"Nenhum caminhão esperando para carregar";
+  const lib=orders.filter(o=>o.status==="liberado");
+  const byDay={};lib.forEach(o=>{if(o.liquido!=null){const k=libDay(o);byDay[k]=(byDay[k]||0)+o.liquido}});
+  const cntDay={};lib.forEach(o=>{const k=libDay(o);cntDay[k]=(cntDay[k]||0)+1});
+  const hojeKg=byDay[today]||0;$("pn_hoje").textContent=ton(hojeKg);
+  const prev7=[];for(let i=1;i<=7;i++){const d=new Date();d.setDate(d.getDate()-i);prev7.push(byDay[dkey(d)]||0)}
+  const m7=prev7.reduce((a,b)=>a+b,0)/7;
+  $("pn_hoje_d").innerHTML=m7>0?(()=>{const pc=Math.round((hojeKg-m7)/m7*100);return `<span class="${pc>=0?"up":"dn"}">${pc>=0?"▲":"▼"} ${Math.abs(pc)}%</span> vs média de 7 dias (${esc(ton(m7))})`})():"sem histórico para comparar";
+  $("pn_lib").textContent=cntDay[today]||0;
+  const p7c=[];for(let i=1;i<=7;i++){const d=new Date();d.setDate(d.getDate()-i);p7c.push(cntDay[dkey(d)]||0)}
+  $("pn_lib_d").textContent="média de "+fmt(p7c.reduce((a,b)=>a+b,0)/7,1)+" por dia na última semana";
+  const since7=now-7*864e5,rec=lib.filter(o=>Date.parse(o.liberadoTs||"")>=since7);
+  const tot=rec.map(o=>ms(o.chegadaTs,o.liberadoTs)).filter(x=>x!=null);
+  $("pn_tmp").textContent=tot.length?dur(tot.reduce((a,b)=>a+b,0)/tot.length):"—";
+  const abertos=cts.filter(c=>c.status!=="encerrado");
+  const saldoKg=abertos.reduce((s,c)=>s+Math.max(0,c.qtd-carregado(c._id)),0);
+  $("pn_saldo").textContent=ton(saldoKg);$("pn_saldo_d").textContent=abertos.length+(abertos.length===1?" contrato aberto":" contratos abertos");
+  // fila por etapa
+  const et=STAGES.map(([s,l])=>{const xs=act.filter(o=>o.status===s);const old=xs.length?Math.max(...xs.map(o=>now-(Date.parse(o[TSK[s]]||"")||tsOf(o)))):0;return{l,v:xs.length,txt:String(xs.length),tip:`${l}: ${xs.length} caminhão(ões)`+(xs.length?` · o mais antigo há ${dur(old)} nesta etapa`:""),hl:"maior fila"}});
+  $("pn_etapas").innerHTML=act.length?rowsHTML(et):'<div class="pn-empty">Nenhum caminhão no pátio agora.</div>';
+  // gargalo
+  const pairs=[["Aguardando autorização","chegadaTs","autorizadoTs"],["Autorização → ordem","autorizadoTs","ordemTs"],["Ordem → início da carga","ordemTs","carregandoTs"],["Carregando","carregandoTs","carregadoTs"],["Carregado → pedir liberação","carregadoTs","aguardlibTs"],["Esperando liberação","aguardlibTs","liberadoTs"]];
+  const gsrc=orders.filter(o=>Date.parse(o.chegadaTs||o.criadoEm||"")>=since7);
+  const g=pairs.map(([l,a,b])=>{const xs=gsrc.map(o=>ms(o[a],o[b])).filter(x=>x!=null);const avg=xs.length?xs.reduce((s,x)=>s+x,0)/xs.length:0;return{l,v:avg/60000,txt:xs.length?dur(avg):"—",tip:xs.length?`${l}: média de ${dur(avg)} (${xs.length} caminhões)`:`${l}: sem registros nos últimos 7 dias`,hl:"maior espera"}});
+  $("pn_gargalo").innerHTML=g.some(x=>x.v>0)?rowsHTML(g):'<div class="pn-empty">Ainda não há caminhões com etapas registradas nos últimos 7 dias.</div>';
+  // toneladas por dia
+  const days=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d)}
+  const vals=days.map(d=>(byDay[dkey(d)]||0)/1000);
+  const tot30=vals.reduce((a,b)=>a+b,0),avg30=tot30/30,mx=niceMax(Math.max(...vals,1)),maxV=Math.max(...vals);
+  $("pn_dias_sub").textContent=`Últimos 30 dias · ${fmt(tot30,1)} t no total · média de ${fmt(avg30,1)} t por dia`;
+  const ticks=[0,mx/2,mx];
+  $("pn_dias").setAttribute("aria-label",`Toneladas carregadas por dia nos últimos 30 dias. Total ${fmt(tot30,1)} toneladas.`);
+  $("pn_dias").innerHTML=tot30?ticks.map(t=>`<div class="gl${t===0?" b0":""}" style="bottom:${t/mx*100}%"><i>${fmt(t,0)}</i></div>`).join("")+
+    `<div class="avg" style="bottom:${avg30/mx*100}%"><i>média ${esc(fmt(avg30,1))} t</i></div>`+
+    `<div class="cs">${days.map((d,i)=>{const v=vals[i],last=i===29,isMax=v>0&&v===maxV;return `<div class="c${last?" hi last":""}${isMax?" max":""}" data-tip="${esc(d.toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit"})+": "+fmt(v,1)+" t · "+(cntDay[dkey(d)]||0)+" caminhões")}"><div class="k" style="height:${(v/mx*100).toFixed(2)}%"></div>${(last||isMax)&&v>0?`<span class="cap" style="bottom:${(v/mx*100).toFixed(2)}%">${esc(fmt(v,1))}</span>`:""}</div>`}).join("")}</div>`
+    :'<div class="pn-empty">Ainda não há cargas liberadas nos últimos 30 dias.</div>';
+  $("pn_dias").nextElementSibling;
+  const xl=document.querySelector(".pn-x");if(xl)xl.remove();
+  if(tot30){const x=document.createElement("div");x.className="pn-x";x.innerHTML=days.map((d,i)=>`<span>${i===29?"hoje":(i%5===4?d.getDate()+"/"+(d.getMonth()+1):"")}</span>`).join("");$("pn_dias").after(x)}
+  $("pn_dias_tab").innerHTML='<table><thead><tr><th>Dia</th><th style="text-align:right">Toneladas</th><th style="text-align:right">Caminhões</th></tr></thead><tbody>'+days.slice().reverse().map(d=>`<tr><td>${esc(d.toLocaleDateString("pt-BR"))}</td><td class="n">${esc(fmt((byDay[dkey(d)]||0)/1000,1))}</td><td class="n">${cntDay[dkey(d)]||0}</td></tr>`).join("")+"</tbody></table>";
+  // contratos
+  $("pn_ct").innerHTML=abertos.length?abertos.map(c=>{const car=carregado(c._id),pct=c.qtd?car/c.qtd*100:0,s=c.qtd-car;return {c,car,pct,s}}).sort((a,b)=>a.s-b.s).map(({c,car,pct,s})=>`<div class="pn-ct" data-tip="${esc(`${c.cod} · ${c.empresa}: ${ton(car)} de ${ton(c.qtd)} (${fmt(pct,0)}%)`)}"><div class="t"><b>${esc(c.cod)} · ${esc(c.empresa)}</b><span>${esc(c.material||"")}</span></div><div class="m"><i class="${s<0?"over":""}" style="width:${Math.min(100,pct).toFixed(1)}%"></i></div><div class="s"><span>${esc(ton(car))} de ${esc(ton(c.qtd))} · ${esc(fmt(pct,0))}%</span>${s<0?`<span class="warn">▲ ${esc(ton(-s))} acima do contratado</span>`:`<span>saldo <b>${esc(ton(s))}</b></span>`}</div></div>`).join(""):'<div class="pn-empty">Nenhum contrato aberto.</div>';
+  // clientes no mês
+  const mk=today.slice(0,7),cli={},cliN={};
+  lib.forEach(o=>{if(o.liquido==null||libDay(o).slice(0,7)!==mk)return;const c=cts.find(x=>x._id===o.contrato);const n=(c&&c.empresa)||o.destino||"Sem cliente";cli[n]=(cli[n]||0)+o.liquido;cliN[n]=(cliN[n]||0)+1});
+  const mes=new Date().toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+  const ci=Object.entries(cli).sort((a,b)=>b[1]-a[1]);
+  $("pn_cli_sub").textContent=mes.charAt(0).toUpperCase()+mes.slice(1)+" · "+ton(ci.reduce((s,x)=>s+x[1],0))+" no total";
+  const top=ci.slice(0,6);if(ci.length>6)top.push(["Outros",ci.slice(6).reduce((s,x)=>s+x[1],0)]);
+  $("pn_cli").innerHTML=top.length?rowsHTML(top.map(([n,kg])=>({l:n,v:kg,txt:ton(kg),tip:`${n}: ${ton(kg)} em ${cliN[n]||"várias"} cargas`,hl:""}))):'<div class="pn-empty">Nenhuma carga liberada neste mês.</div>';
+  $("pn_upd").textContent="Atualizado às "+hhmm(new Date());
+}
+{const tip=$("pn_tip");
+ const showTip=(el,x,y)=>{tip.textContent=el.dataset.tip;tip.hidden=false;const r=tip.getBoundingClientRect();tip.style.left=Math.max(8,Math.min(innerWidth-r.width-8,x+14))+"px";tip.style.top=Math.max(8,y-r.height-12)+"px"};
+ $("v-painel").addEventListener("mousemove",e=>{const el=e.target.closest("[data-tip]");if(el)showTip(el,e.clientX,e.clientY);else tip.hidden=true});
+ $("v-painel").addEventListener("mouseleave",()=>tip.hidden=true);
+ $("v-painel").addEventListener("click",e=>{const el=e.target.closest("[data-tip]");if(el){showTip(el,e.clientX,e.clientY);clearTimeout(showTip.t);showTip.t=setTimeout(()=>tip.hidden=true,2500)}});}
+setInterval(renderPainel,60000);
+
 /* ---------- Navegação ---------- */
 function show(v){
-  ["patio","nova","ct","hist","cad","cfg","usr"].forEach(k=>$("v-"+k).hidden=k!==v);
+  ["patio","painel","nova","ct","hist","cad","cfg","usr"].forEach(k=>$("v-"+k).hidden=k!==v);
   document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===v));
   $("bar").hidden=v!=="nova";
-  if(v==="hist")renderList();if(v==="cfg")fillCfg();if(v==="patio")renderPatio();if(v==="usr")renderUsers();if(v==="cad")renderCad();if(v==="ct"){renderCt();if(!ctEdit&&!$("ct_data").value)$("ct_data").value=hoje()}
+  if(v==="hist")renderList();if(v==="cfg")fillCfg();if(v==="patio")renderPatio();if(v==="painel")renderPainel();if(v==="usr")renderUsers();if(v==="cad")renderCad();if(v==="ct"){renderCt();if(!ctEdit&&!$("ct_data").value)$("ct_data").value=hoje()}
 }
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.v));
 $("bNova").onclick=clearForm;
@@ -978,6 +1182,7 @@ $("u_lista").addEventListener("click",async e=>{
     renderPlacas();showCtSaldo();
     if(!$("v-patio").hidden)renderPatio();
     if(!$("v-ct").hidden)renderCt();
+    renderPainel();
     status(orders.length+(orders.length===1?" ordem salva":" ordens salvas")+" · próximo número: "+String(nextNumber()).padStart(4,"0"));
     if(!editing)$("hNum").textContent=String(nextNumber()).padStart(4,"0")+"?";
     if(!$("v-hist").hidden)renderList();
